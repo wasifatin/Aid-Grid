@@ -79,17 +79,17 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 p-3 pl-4 hidden md:flex flex-col justify-between shrink-0">
-      {/* Floating Liquid Glass Dock */}
-      <div className="glass-pane glass-rim p-3.5 rounded-3xl space-y-4">
-        {/* Workspaces Menu */}
+    <aside className="w-72 p-3 pl-4 hidden md:flex flex-col shrink-0 sticky top-20 h-[calc(100vh-5.5rem)] pb-4">
+      {/* Floating Liquid Glass Dock (Elongated Full Height & Spaced Sections) */}
+      <div className="glass-pane glass-rim p-4 rounded-3xl flex flex-col justify-between h-full shadow-2xl overflow-y-auto">
+        {/* Workspaces Menu Section */}
         <div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-2 flex items-center justify-between">
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-3 flex items-center justify-between">
             <span>Workspaces</span>
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
           </div>
 
-          <nav className="space-y-1">
+          <nav className="space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -119,21 +119,21 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Evaluator Role & Pilot Switcher (Switched directly into the mini taskbar) */}
-        <div className="pt-3 border-t border-white/10 space-y-2.5">
+        {/* Evaluator Role & Pilot Switcher Section (Maintained Gap & Elongated) */}
+        <div className="mt-auto pt-4 border-t border-white/10 space-y-3">
           {/* Header Row */}
-          <div className="flex items-center justify-between text-[11px]">
+          <div className="flex items-center justify-between text-[11px] px-1">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
               <span className="font-bold text-white tracking-wide">AIDGRID</span>
-              <span className="text-[8px] font-black uppercase px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+              <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
                 PANE V2.6
               </span>
             </div>
 
             <button
               onClick={() => setShowEmergencyModal(true)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[10px] font-bold transition-colors"
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[10px] font-bold transition-colors shadow-sm"
             >
               <PhoneCall className="w-2.5 h-2.5 text-rose-400" />
               <span>999</span>
@@ -141,7 +141,7 @@ export default function Sidebar() {
           </div>
 
           {/* Active Role Pill */}
-          <div className="flex items-center justify-between text-[10px] px-2.5 py-1 rounded-xl bg-white/5 border border-white/10">
+          <div className="flex items-center justify-between text-[10px] px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 shadow-inner">
             <span className="text-slate-400 font-medium">Active Role:</span>
             <span className="font-black text-cyan-300 uppercase tracking-wider">
               {user?.role.replace('_', ' ') || 'SYSTEM ADMIN'}
@@ -149,14 +149,14 @@ export default function Sidebar() {
           </div>
 
           {/* Pilot Coverage Row */}
-          <div className="text-[10px] text-slate-400 flex items-center gap-1 leading-tight">
-            <MapPin className="w-3 h-3 text-cyan-400 shrink-0" />
+          <div className="text-[10px] text-slate-400 flex items-center gap-1.5 px-1 leading-tight">
+            <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span>Pilot: <strong className="text-slate-200">Dhaka DNCC & DSCC (Zones 1-5)</strong></span>
           </div>
 
-          {/* Switch Evaluator Role Section */}
-          <div className="space-y-1 pt-1">
-            <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-cyan-400">
+          {/* 4 Roles Sign In Section */}
+          <div className="space-y-1.5 pt-1 border-t border-white/5">
+            <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-cyan-400 px-1">
               <span>4 ROLES SIGN IN:</span>
               <button
                 onClick={() => setIsSignInModalOpen(true)}
@@ -165,10 +165,10 @@ export default function Sidebar() {
                 manage
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-1 text-[10px]">
+            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
               <button
                 onClick={() => loginAsJudgeRole('SYSTEM_ADMIN')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
+                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'SYSTEM_ADMIN'
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
@@ -178,7 +178,7 @@ export default function Sidebar() {
               </button>
               <button
                 onClick={() => loginAsJudgeRole('DEPARTMENT_MANAGER')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
+                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'DEPARTMENT_MANAGER'
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
@@ -188,7 +188,7 @@ export default function Sidebar() {
               </button>
               <button
                 onClick={() => loginAsJudgeRole('FIELD_OFFICER')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
+                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'FIELD_OFFICER'
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
@@ -198,7 +198,7 @@ export default function Sidebar() {
               </button>
               <button
                 onClick={() => loginAsJudgeRole('CITIZEN')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
+                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'CITIZEN'
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'

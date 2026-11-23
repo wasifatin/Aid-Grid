@@ -11,8 +11,6 @@ import {
   LogOut,
   ExternalLink,
   Sparkles,
-  Sun,
-  Moon,
   LogIn,
   Users,
 } from 'lucide-react';
@@ -23,22 +21,12 @@ export default function Header() {
     lang,
     t,
     setLanguage,
-    theme,
-    toggleTheme,
     logout,
     setIsSignInModalOpen,
-    toastMessage,
   } = useApp();
 
   return (
     <header className="sticky top-0 z-30 px-4 sm:px-6 lg:px-8 pt-3 pb-2">
-      {/* Toast Notification Banner (Liquid Glass Droplet) */}
-      {toastMessage && (
-        <div className="max-w-md mx-auto mb-2 glass-pane glass-rim px-4 py-2 text-center text-xs font-bold text-cyan-300 shadow-xl border-cyan-500/40 animate-bounce">
-          ✨ {toastMessage}
-        </div>
-      )}
-
       {/* Main Floating Glass Top Bar */}
       <div className="max-w-7xl mx-auto glass-pane-chrome glass-rim px-5 h-16 flex items-center justify-between gap-4 rounded-2xl">
         {/* Brand Logo with Glowing Glass Gem */}
@@ -64,21 +52,8 @@ export default function Header() {
         {/* Center Space for Dynamic Island */}
         <div className="flex-1 max-w-sm hidden md:block"></div>
 
-        {/* Right Controls: Theme Toggle, Bilingual Switcher, 4 Roles Sign In, & User Pill */}
+        {/* Right Controls: Bilingual Switcher, 4 Roles Sign In, & User Pill */}
         <div className="flex items-center gap-2.5">
-          {/* Light / Dark Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="p-2 rounded-xl bg-black/20 hover:bg-black/30 border border-white/10 text-slate-300 hover:text-white transition-colors"
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-cyan-400" />
-            ) : (
-              <Moon className="w-4 h-4 text-slate-700" />
-            )}
-          </button>
-
           {/* Bilingual Language Switcher (Glass Capsule) */}
           <div className="flex items-center bg-black/30 border border-white/10 rounded-full p-0.5 shadow-inner">
             <button

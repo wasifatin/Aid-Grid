@@ -22,8 +22,6 @@ interface AppContextType {
   lang: Language;
   t: typeof translations['en'];
   setLanguage: (lang: Language) => void;
-  theme: 'dark' | 'light';
-  toggleTheme: () => void;
   loginAsJudgeRole: (role: 'CITIZEN' | 'FIELD_OFFICER' | 'DEPARTMENT_MANAGER' | 'SYSTEM_ADMIN') => Promise<any>;
   loginWithCredentials: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -41,7 +39,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserSession | null>(null);
   const [lang, setLang] = useState<Language>('en');
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -49,13 +46,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const t = translations[lang];
 
   useEffect(() => {
-    // Theme initialization
-    const savedTheme = localStorage.getItem('aidgrid_theme') as 'dark' | 'light' | null;
-    if (savedTheme === 'light') {
-      setTheme('light');
-      document.documentElement.classList.add('light');
-    } else {
+    // Permanent Dark Liquid Glass Theme
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('aidgrid_theme');
       document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
     }
 
     // Check initial session
@@ -78,26 +73,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('aidgrid_theme', nextTheme);
-    if (nextTheme === 'light') {
-      document.documentElement.classList.add('light');
-    } else {
-      document.documentElement.classList.remove('light');
-    }
-    showToast(`Switched to ${nextTheme === 'light' ? 'Light (High Contrast)' : 'Dark (Liquid Glass)'} mode.`);
-  };
-
   const setLanguage = (newLang: Language) => {
     setLang(newLang);
     localStorage.setItem('aidgrid_lang', newLang);
   };
 
   const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    // Suppress intrusive UI popups per user request
+    console.log('[AidGrid Notification]', msg);
   };
 
   const loginAsJudgeRole = async (role: 'CITIZEN' | 'FIELD_OFFICER' | 'DEPARTMENT_MANAGER' | 'SYSTEM_ADMIN') => {
@@ -153,8 +136,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         lang,
         t,
         setLanguage,
-        theme,
-        toggleTheme,
         loginAsJudgeRole,
         loginWithCredentials,
         logout,
