@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
+import CustomDropdown from '@/components/CustomDropdown';
 import {
   AlertCircle,
   Clock,
@@ -313,12 +314,23 @@ export default function CommandCenterPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(16px)',
-                      borderRadius: '0.75rem',
-                      fontSize: '12px',
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const item = payload[0];
+                        return (
+                          <div className="glass-pane glass-rim px-3.5 py-2 rounded-xl shadow-2xl border border-cyan-500/40 bg-slate-950/95 backdrop-blur-xl text-left pointer-events-none z-50">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                              Priority Level
+                            </span>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: item.payload?.color || '#00d1ff' }} />
+                              <span className="text-xs font-black text-white">{item.name}:</span>
+                              <span className="text-xs font-mono font-bold text-cyan-300">{item.value} issues</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
                 </PieChart>
@@ -364,35 +376,39 @@ export default function CommandCenterPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Status Filter */}
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3.5 py-2 bg-black/30 border border-white/10 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
-            >
-              <option value="">{t.dashboard.quickFilter} (All)</option>
-              <option value="SUBMITTED">SUBMITTED</option>
-              <option value="TRIAGED">TRIAGED</option>
-              <option value="ASSIGNED">ASSIGNED</option>
-              <option value="IN_PROGRESS">IN_PROGRESS</option>
-              <option value="CITIZEN_REVIEW">CITIZEN_REVIEW</option>
-              <option value="RESOLVED">RESOLVED</option>
-              <option value="CLOSED">CLOSED</option>
-              <option value="ESCALATED">ESCALATED</option>
-              <option value="REOPENED">REOPENED</option>
-            </select>
+            <div className="w-44">
+              <CustomDropdown
+                options={[
+                  { value: '', label: `${t.dashboard.quickFilter} (All)` },
+                  { value: 'SUBMITTED', label: 'SUBMITTED' },
+                  { value: 'TRIAGED', label: 'TRIAGED' },
+                  { value: 'ASSIGNED', label: 'ASSIGNED' },
+                  { value: 'IN_PROGRESS', label: 'IN_PROGRESS' },
+                  { value: 'CITIZEN_REVIEW', label: 'CITIZEN_REVIEW' },
+                  { value: 'RESOLVED', label: 'RESOLVED' },
+                  { value: 'CLOSED', label: 'CLOSED' },
+                  { value: 'ESCALATED', label: 'ESCALATED' },
+                  { value: 'REOPENED', label: 'REOPENED' },
+                ]}
+                value={selectedStatus}
+                onChange={setSelectedStatus}
+              />
+            </div>
 
             {/* Priority Filter */}
-            <select
-              value={selectedPriority}
-              onChange={(e) => setSelectedPriority(e.target.value)}
-              className="px-3.5 py-2 bg-black/30 border border-white/10 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
-            >
-              <option value="">{t.dashboard.allPriorities}</option>
-              <option value="CRITICAL">Critical (80-100)</option>
-              <option value="HIGH">High (60-79)</option>
-              <option value="MEDIUM">Medium (35-59)</option>
-              <option value="LOW">Low (0-34)</option>
-            </select>
+            <div className="w-48">
+              <CustomDropdown
+                options={[
+                  { value: '', label: t.dashboard.allPriorities },
+                  { value: 'CRITICAL', label: 'Critical (80-100)' },
+                  { value: 'HIGH', label: 'High (60-79)' },
+                  { value: 'MEDIUM', label: 'Medium (35-59)' },
+                  { value: 'LOW', label: 'Low (0-34)' },
+                ]}
+                value={selectedPriority}
+                onChange={setSelectedPriority}
+              />
+            </div>
           </div>
         </div>
 

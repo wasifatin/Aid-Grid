@@ -1,10 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import PerspectiveCard from '@/components/PerspectiveCard';
 import {
   Users,
   Shield,
@@ -12,58 +10,50 @@ import {
   Building2,
   Lock,
   Mail,
-  KeyRound,
-  CheckCircle2,
-  ArrowRight,
-  Sparkles,
-  MapPin,
+  Eye,
+  EyeOff,
   Check,
+  Sparkles,
+  ArrowRight,
+  MapPin,
 } from 'lucide-react';
 
 const PRESET_ROLES = [
   {
-    role: 'CITIZEN' as const,
-    name: 'Citizen / Resident',
-    email: 'citizen@aidgrid.gov.bd',
-    fullName: 'Rahim Ahmed',
-    targetHref: '/citizen',
-    description: 'Report civic issues, view interactive GIS maps, duplicate corroboration, and verify completed resolutions.',
-    icon: Users,
-    badge: 'Module A Access',
-    badgeColor: 'border-cyan-400/40 text-cyan-300 bg-cyan-500/15',
-  },
-  {
-    role: 'FIELD_OFFICER' as const,
-    name: 'Field Response Lead',
-    email: 'officer@aidgrid.gov.bd',
-    fullName: 'Kamal Hossain (Alpha-1 Lead)',
-    targetHref: '/field-ops',
-    description: 'Acknowledge work orders, manage dispatch queue, start physical repairs, and upload completion proof.',
-    icon: Truck,
-    badge: 'Module C Access',
-    badgeColor: 'border-sky-400/40 text-sky-300 bg-sky-500/15',
+    role: 'SYSTEM_ADMIN' as const,
+    name: 'Admin',
+    fullName: 'Tariqul Islam',
+    email: 'admin@aidgrid.gov.bd',
+    icon: Shield,
+    badge: 'System Admin',
+    desc: 'Full operational authority & A02/A07 controls',
   },
   {
     role: 'DEPARTMENT_MANAGER' as const,
-    name: 'Department Manager',
+    name: 'Manager',
+    fullName: 'Engr. Nazmul Haque',
     email: 'manager@dncc.gov.bd',
-    fullName: 'Engr. Nazmul Haque (DNCC Roads)',
-    targetHref: '/analytics',
-    description: 'Cross-department coordination, team capacity, SLA compliance, and emergency escalation management.',
     icon: Building2,
-    badge: 'Operations Command',
-    badgeColor: 'border-teal-400/40 text-teal-300 bg-teal-500/15',
+    badge: 'DNCC Roads Lead',
+    desc: 'Department workload & team capacity oversight',
   },
   {
-    role: 'SYSTEM_ADMIN' as const,
-    name: 'System Administrator',
-    email: 'admin@aidgrid.gov.bd',
-    fullName: 'Tariqul Islam (System Admin)',
-    targetHref: '/',
-    description: 'Full administrative control, A02 decision engine weights calibration, A07 automated workflow recovery, and audit trails.',
-    icon: Shield,
-    badge: 'System Admin',
-    badgeColor: 'border-indigo-400/40 text-indigo-300 bg-indigo-500/15',
+    role: 'FIELD_OFFICER' as const,
+    name: 'Field Lead',
+    fullName: 'Kamal Hossain',
+    email: 'officer@aidgrid.gov.bd',
+    icon: Truck,
+    badge: 'Alpha-1 Dispatch',
+    desc: 'Field response queue & work resolution proof',
+  },
+  {
+    role: 'CITIZEN' as const,
+    name: 'Citizen',
+    fullName: 'Rahim Ahmed',
+    email: 'citizen@aidgrid.gov.bd',
+    icon: Users,
+    badge: 'Mirpur Resident',
+    desc: 'Civic issue reporting & GIS map pinning',
   },
 ];
 
@@ -71,240 +61,315 @@ export default function LoginPage() {
   const router = useRouter();
   const { user, loginAsJudgeRole, loginWithCredentials } = useApp();
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('admin@aidgrid.gov.bd');
   const [password, setPassword] = useState('password123');
-  const [loadingRole, setLoadingRole] = useState<string | null>(null);
-  const [loadingCredentials, setLoadingCredentials] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'SYSTEM_ADMIN' | 'DEPARTMENT_MANAGER' | 'FIELD_OFFICER' | 'CITIZEN'>('SYSTEM_ADMIN');
+  const [statusMsg, setStatusMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isMelting, setIsMelting] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleQuickLogin = async (roleObj: typeof PRESET_ROLES[0]) => {
-    setLoadingRole(roleObj.role);
-    setErrorMsg(null);
-    try {
-      await loginAsJudgeRole(roleObj.role);
-      router.push(roleObj.targetHref);
-    } catch (e: any) {
-      setErrorMsg(e.message || 'Login failed');
-    } finally {
-      setLoadingRole(null);
-    }
-  };
+  // Mouse interaction for metaball hero
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const handleCredentialsSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoadingCredentials(true);
-    setErrorMsg(null);
-    const res = await loginWithCredentials(email, password);
-    setLoadingCredentials(false);
-    if (res.success) {
-      router.push('/');
-    } else {
-      setErrorMsg(res.error || 'Invalid credentials');
-    }
-  };
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 24,
+        y: (e.clientY / window.innerHeight - 0.5) * 18,
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
-  const autofill = (demoEmail: string) => {
-    setEmail(demoEmail);
+  // Handle Quick Role Select
+  const handleSelectRole = (r: typeof PRESET_ROLES[0]) => {
+    setSelectedRole(r.role);
+    setEmail(r.email);
     setPassword('password123');
+    setErrorMsg(null);
+  };
+
+  // Perform Sign-In & Smooth Transition to Dashboard
+  const handleSignIn = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (submitting) return;
+
+    if (!email) {
+      setErrorMsg('Please enter your account email.');
+      return;
+    }
+    if (!password) {
+      setErrorMsg('Please enter your password.');
+      return;
+    }
+
+    setSubmitting(true);
+    setErrorMsg(null);
+    setStatusMsg('Signing you in...');
+    setIsMelting(true);
+
+    try {
+      // Authenticate via credentials
+      const res = await loginWithCredentials(email, password);
+      if (res.success) {
+        setIsDone(true);
+        setStatusMsg('Welcome back!');
+        // Liquid melt completion then smooth transition to dashboard
+        setTimeout(() => {
+          router.push('/');
+        }, 800);
+      } else {
+        setIsMelting(false);
+        setIsDone(false);
+        setSubmitting(false);
+        setStatusMsg('');
+        setErrorMsg(res.error || 'Authentication failed. Please verify credentials.');
+      }
+    } catch (err: any) {
+      setIsMelting(false);
+      setIsDone(false);
+      setSubmitting(false);
+      setStatusMsg('');
+      setErrorMsg(err.message || 'Network error during sign-in.');
+    }
+  };
+
+  // One-click Instant Login as specific role
+  const handle1ClickRoleLogin = async (role: typeof PRESET_ROLES[0]['role']) => {
+    if (submitting) return;
+    setSubmitting(true);
+    setSelectedRole(role);
+    setStatusMsg(`Authenticating as ${role.replace('_', ' ')}...`);
+    setIsMelting(true);
+
+    try {
+      const res = await loginAsJudgeRole(role);
+      if (res?.success !== false) {
+        setIsDone(true);
+        setStatusMsg('Welcome back!');
+        setTimeout(() => {
+          router.push('/');
+        }, 800);
+      } else {
+        setIsMelting(false);
+        setIsDone(false);
+        setSubmitting(false);
+        setStatusMsg('');
+        setErrorMsg(res.error || 'Role login failed.');
+      }
+    } catch (err: any) {
+      setIsMelting(false);
+      setIsDone(false);
+      setSubmitting(false);
+      setStatusMsg('');
+      setErrorMsg(err.message || 'Error switching role.');
+    }
   };
 
   return (
-    <div className="min-h-screen py-10 px-4 max-w-5xl mx-auto space-y-8 perspective-container text-left">
-      {/* Brand Header */}
-      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-400/30">
-              Role-Based Authentication
-            </span>
-            <span className="text-xs text-slate-400 font-medium">
-              Pilot Coverage: Dhaka DNCC & DSCC (Zones 1-5)
-            </span>
+    <div className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+      {/* Code & Chill Flow SVG Filters Defs */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <filter id="flowGoo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b" />
+            <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+          <linearGradient id="flowLiquidGrad" x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0%" stopColor="#00d1ff" />
+            <stop offset="52%" stopColor="#0ea5e9" />
+            <stop offset="100%" stopColor="#2563eb" />
+          </linearGradient>
+          <radialGradient id="flowGlossGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+      </svg>
+
+      {/* Ambient Backdrop Canvas */}
+      <div className="flow-ambient">
+        <div className="wall-orb wall-orb-1" style={{ width: '700px', height: '700px', top: '-150px', left: '15%' }}></div>
+        <div className="wall-orb wall-orb-2" style={{ width: '650px', height: '650px', bottom: '-200px', right: '10%' }}></div>
+      </div>
+
+      <main className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center">
+        {/* ===================== THE LIQUID HERO ===================== */}
+        {/* Living cluster of metaballs that breathe and react to cursor movement */}
+        <div
+          ref={stageRef}
+          className="w-48 h-36 flex items-center justify-center mb-2 transition-transform duration-300 ease-out pointer-events-none"
+          style={{
+            transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)`,
+            filter: 'drop-shadow(0 20px 35px rgba(0, 209, 255, 0.45))',
+          }}
+        >
+          <svg className="w-full h-full" viewBox="0 0 240 200">
+            <g filter="url(#flowGoo)" fill="url(#flowLiquidGrad)">
+              <circle cx="120" cy="100" r="36" />
+              <circle cx="100" cy="90" r="26" />
+              <circle cx="140" cy="90" r="24" />
+              <circle cx="120" cy="120" r="26" />
+              <circle cx="110" cy="105" r="22" />
+            </g>
+            {/* Specular gloss sheen */}
+            <ellipse cx="106" cy="82" rx="24" ry="14" fill="url(#flowGlossGrad)" />
+            <circle cx="140" cy="78" r="4" fill="#ffffff" />
+          </svg>
+        </div>
+
+        {/* ===================== THE FLOW CARD ===================== */}
+        <section className="flow-card w-full p-6 sm:p-7 text-left">
+          {/* Brand Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-navy-950 font-black text-xs shadow-md shadow-cyan-500/30">
+                AG
+              </div>
+              <div>
+                <h1 className="text-sm font-black tracking-wider text-white">AIDGRID</h1>
+                <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider block">
+                  FLOW V2.6
+                </span>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+              <MapPin className="w-3 h-3 text-cyan-400" />
+              <span>Dhaka Pilot</span>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+
+          <h2 className="text-xl font-black text-white tracking-tight mb-1">
             Sign In to AidGrid
-            <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse hidden sm:inline" />
-          </h1>
-          <p className="text-slate-300/80 text-xs sm:text-sm mt-1 max-w-2xl">
-            Choose any of the 4 defined operational roles for instant evaluator access, or enter account credentials.
-          </p>
-        </div>
-
-        {user && (
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-xs font-bold text-cyan-300">
-              {user.fullName.charAt(0)}
-            </div>
-            <div>
-              <p className="text-xs font-bold text-white leading-tight">
-                {user.fullName}
-              </p>
-              <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider block">
-                Active: {user.role.replace('_', ' ')}
-              </span>
-            </div>
-            <Link
-              href="/"
-              className="ml-2 px-3 py-1.5 rounded-xl btn-jellyfish text-xs font-bold"
-            >
-              Enter Dashboard
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {errorMsg && (
-        <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center justify-between">
-          <span>✕ {errorMsg}</span>
-          <button onClick={() => setErrorMsg(null)} className="text-rose-400 hover:text-white">✕</button>
-        </div>
-      )}
-
-      {/* Section 1: 4 Roles 1-Click Cards Grid */}
-      <div>
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h2 className="text-xs font-black uppercase tracking-wider text-cyan-400">
-            Option 1 — 1-Click Role Access (Instant Evaluator Switching):
           </h2>
-          <span className="text-[11px] text-slate-400 font-mono">No password required</span>
-        </div>
+          <p className="text-xs text-slate-300 mb-4">
+            Public issues. Accountable action. Enter credentials or select an operational role.
+          </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {PRESET_ROLES.map((item) => {
-            const Icon = item.icon;
-            const isCurrent = user?.role === item.role;
-            const isLoading = loadingRole === item.role;
-
-            return (
-              <PerspectiveCard
-                key={item.role}
-                className={`p-5 flex flex-col justify-between jellyfish-interactive ${
-                  isCurrent ? 'border-cyan-400/50 shadow-lg shadow-cyan-500/15' : ''
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full border ${item.badgeColor}`}>
-                      {item.badge}
+          {/* 4 Roles One-Click Selector Pills (Flow style) */}
+          <div className="mb-4">
+            <span className="text-[10px] font-black uppercase tracking-wider text-cyan-400 block mb-1.5">
+              1-Click Role Access:
+            </span>
+            <div className="grid grid-cols-4 gap-1.5">
+              {PRESET_ROLES.map((r) => {
+                const isSelected = selectedRole === r.role;
+                return (
+                  <button
+                    key={r.role}
+                    type="button"
+                    onClick={() => handleSelectRole(r)}
+                    className={`py-2 px-1 rounded-xl text-center border transition-all duration-200 flex flex-col items-center justify-center ${
+                      isSelected
+                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/25 scale-[1.03]'
+                        : 'bg-black/30 border-white/10 text-slate-400 hover:border-cyan-500/40 hover:text-slate-200'
+                    }`}
+                  >
+                    <span className="text-[11px] font-black leading-tight block">{r.name}</span>
+                    <span className="text-[9px] text-slate-400 font-normal truncate max-w-full">
+                      {r.role.split('_')[0]}
                     </span>
-                    {isCurrent && (
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400">
-                        <Check className="w-3 h-3" />
-                        <span>Active</span>
-                      </span>
-                    )}
-                  </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-cyan-400">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <h3 className="text-sm font-black text-white">{item.name}</h3>
-                  </div>
+          {errorMsg && (
+            <div className="p-3 mb-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold animate-fadeIn">
+              ✕ {errorMsg}
+            </div>
+          )}
 
-                  <p className="text-xs font-bold text-slate-300 mb-1.5">{item.fullName}</p>
-
-                  <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-                    {item.description}
-                  </p>
-
-                  <div className="p-2 rounded-xl bg-black/20 border border-white/5 text-[10px] font-mono text-slate-400 truncate mb-4">
-                    {item.email}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleQuickLogin(item)}
-                  disabled={isLoading}
-                  className="w-full py-2.5 px-3 rounded-xl btn-jellyfish text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5"
-                >
-                  <span>{isLoading ? 'Authenticating...' : `Sign In as ${item.name.split(' ')[0]}`}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </PerspectiveCard>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Section 2: Standard Email & Password Authentication */}
-      <div className="glass-pane glass-rim p-6 rounded-3xl max-w-xl mx-auto shadow-2xl">
-        <h2 className="text-sm font-black uppercase tracking-wider text-white mb-1 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-cyan-400" />
-          <span>Option 2 — Standard Credentials Sign In:</span>
-        </h2>
-        <p className="text-xs text-slate-400 mb-4">
-          Authenticate directly against the database profiles with secure bcrypt password verification.
-        </p>
-
-        <form onSubmit={handleCredentialsSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
-              Account Email
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          {/* Flow Input Form */}
+          <form onSubmit={handleSignIn} className="space-y-3.5">
+            {/* Email Field with Floating Label */}
+            <div className="flow-field">
               <input
+                id="email"
                 type="email"
                 required
-                placeholder="name@aidgrid.gov.bd"
+                placeholder=" "
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-3 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
+              <label htmlFor="email">Account Email</label>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
-              Password
-            </label>
-            <div className="relative">
-              <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            {/* Password Field with Floating Label & Reveal Eye */}
+            <div className="flow-field">
               <input
-                type="password"
+                id="password"
+                type={showPassword ? 'text' : 'password'}
                 required
-                placeholder="Enter password"
+                placeholder=" "
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-3 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
               />
+              <label htmlFor="password">Password</label>
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+
+            {/* Status Message */}
+            {statusMsg && (
+              <p className="text-xs font-bold text-cyan-300 text-center animate-pulse pt-1">
+                {statusMsg}
+              </p>
+            )}
+
+            {/* Flow Submit Button (Melts into checkmark) */}
+            <button
+              type="submit"
+              disabled={submitting}
+              className={`flow-btn w-full py-3.5 mt-2 flex items-center justify-center gap-2 text-xs uppercase tracking-wider ${
+                isMelting ? 'is-melting' : ''
+              } ${isDone ? 'is-done' : ''}`}
+            >
+              {isDone ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Authenticated</span>
+                </>
+              ) : submitting ? (
+                <span>Verifying...</span>
+              ) : (
+                <>
+                  <span>Sign In & Enter Dashboard</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Direct 1-Click Instant Sign-In Button */}
+          <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Instant Access:</span>
+            <button
+              type="button"
+              onClick={() => handle1ClickRoleLogin(selectedRole)}
+              disabled={submitting}
+              className="text-cyan-400 hover:text-cyan-300 font-bold hover:underline flex items-center gap-1"
+            >
+              <span>Instant Enter as {selectedRole.replace('_', ' ')}</span>
+              <Sparkles className="w-3 h-3 text-cyan-400" />
+            </button>
           </div>
-
-          {/* Autofill Pills */}
-          <div className="pt-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-              Fill demo credentials:
-            </span>
-            <div className="flex flex-wrap gap-2 text-[10px]">
-              {PRESET_ROLES.map((r) => (
-                <button
-                  key={r.email}
-                  type="button"
-                  onClick={() => autofill(r.email)}
-                  className="px-3 py-1 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-medium transition-colors"
-                >
-                  {r.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loadingCredentials}
-            className="w-full mt-4 py-3 rounded-2xl btn-jellyfish text-xs font-black uppercase tracking-wider shadow-lg flex items-center justify-center gap-2"
-          >
-            <Lock className="w-3.5 h-3.5" />
-            <span>{loadingCredentials ? 'Verifying...' : 'Sign In with Credentials'}</span>
-          </button>
-        </form>
-
-        <div className="mt-4 pt-3 border-t border-white/10 text-center text-xs text-slate-400">
-          Default password for all demo accounts: <strong className="text-cyan-300 font-mono">password123</strong>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

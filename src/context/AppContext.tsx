@@ -63,13 +63,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             setLang('bn');
           }
         } else {
-          // Default demo auto-login as Admin for seamless judge evaluation
-          loginAsJudgeRole('SYSTEM_ADMIN');
+          // If not authenticated, prompt sign-in gate first
+          setUser(null);
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
         }
       })
       .catch(() => {
-        // Fallback demo user
-        loginAsJudgeRole('SYSTEM_ADMIN');
+        setUser(null);
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       });
   }, []);
 
@@ -127,6 +132,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await fetch('/api/auth/login', { method: 'DELETE' });
     setUser(null);
     showToast('Signed out of session.');
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   };
 
   return (

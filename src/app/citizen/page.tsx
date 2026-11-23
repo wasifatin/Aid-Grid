@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
+import CustomDropdown from '@/components/CustomDropdown';
 import {
   FilePlus,
   MapPin,
@@ -51,24 +52,30 @@ export default function CitizenPortalPage() {
   const [feedbackComment, setFeedbackComment] = useState('');
   const [reopenReason, setReopenReason] = useState('');
 
-  // Fetch Nearby Duplicates
+  // Fetch Nearby Duplicates (Stabilized against category switches to eliminate flicker)
   useEffect(() => {
+    let isCancelled = false;
     const fetchNearby = async () => {
-      setCheckingNearby(true);
       try {
         const res = await fetch(`/api/reports/nearby?lat=${latitude}&lng=${longitude}&radius=0.8`);
         const data = await res.json();
-        setNearbyReports(data.nearby || []);
+        if (!isCancelled) {
+          setNearbyReports(data.nearby || []);
+          setCheckingNearby(false);
+        }
       } catch (e) {
         console.error(e);
-      } finally {
-        setCheckingNearby(false);
+        if (!isCancelled) setCheckingNearby(false);
       }
     };
 
-    const timer = setTimeout(fetchNearby, 400);
-    return () => clearTimeout(timer);
-  }, [latitude, longitude, categoryId]);
+    setCheckingNearby(true);
+    const timer = setTimeout(fetchNearby, 300);
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
+  }, [latitude, longitude]);
 
   // Fetch User's reports
   const fetchMyReports = async () => {
@@ -283,17 +290,16 @@ export default function CitizenPortalPage() {
                   <label className="block text-[11px] font-bold text-slate-400 mb-1">
                     {t.reportForm.zoneLabel}
                   </label>
-                  <select
+                  <CustomDropdown
+                    options={PILOT_ZONES.map((z) => ({
+                      value: z.code,
+                      label: lang === 'bn' ? z.nameBn : z.name,
+                      sublabel: `GPS: ${z.centerLat}, ${z.centerLng}`,
+                    }))}
                     value={selectedZone.code}
-                    onChange={(e) => handleZoneChange(e.target.value)}
-                    className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-slate-200"
-                  >
-                    {PILOT_ZONES.map((z) => (
-                      <option key={z.code} value={z.code}>
-                        {lang === 'bn' ? z.nameBn : z.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={handleZoneChange}
+                    icon={<MapPin className="w-3.5 h-3.5 text-cyan-400" />}
+                  />
                 </div>
 
                 <div>
@@ -426,7 +432,7 @@ export default function CitizenPortalPage() {
               {t.reportForm.nearbyDesc}
             </p>
 
-            <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+            <div className={`space-y-2.5 max-h-56 overflow-y-auto pr-1 transition-opacity duration-300 ${checkingNearby ? 'opacity-70' : 'opacity-100'}`}>
               {nearbyReports.length === 0 ? (
                 <div className="p-4 rounded-2xl bg-black/20 border border-white/5 text-center text-xs text-slate-400">
                   No duplicate complaints found within 800m. Your report will be treated as primary incident!

@@ -340,3 +340,107 @@ body {
   top: -60px;
   left: -60px;
 }
+
+/* =========================================================================
+ * CODE & CHILL "FLOW" LIQUID SIGN-IN STYLING (demo.codeandchill.store/flow/)
+ * ========================================================================= */
+
+.flow-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 50% -10%, #16273c 0%, transparent 60%),
+              linear-gradient(180deg, #101a2b, #070b12 72%);
+}
+
+.flow-card {
+  position: relative;
+  border-radius: 28px;
+  background: rgba(14, 21, 35, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.65), 0 0 60px -20px rgba(0, 209, 255, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.55, 1), box-shadow 0.45s ease, border-color 0.3s ease;
+}
+
+.flow-card:hover {
+  border-color: rgba(0, 209, 255, 0.4);
+  box-shadow: 0 52px 100px rgba(0, 0, 0, 0.75), 0 0 80px -15px rgba(0, 209, 255, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.flow-field {
+  position: relative;
+}
+
+.flow-field input {
+  width: 100%;
+  padding: 20px 16px 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.flow-field input:focus {
+  border-color: #00d1ff;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 20px -4px rgba(0, 209, 255, 0.3);
+}
+
+.flow-field label {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.6);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.flow-field input:focus + label,
+.flow-field input:not(:placeholder-shown) + label {
+  transform: translateY(-9px) scale(0.75);
+  color: #38bdf8;
+}
+
+.flow-btn {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00d1ff 0%, #0ea5e9 50%, #2563eb 100%);
+  color: #040812;
+  font-weight: 800;
+  box-shadow: 0 10px 25px -5px rgba(0, 209, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  transition: transform 0.3s cubic-bezier(0.34, 1.45, 0.55, 1), box-shadow 0.3s ease, filter 0.3s ease, background 0.4s ease, color 0.3s ease;
+}
+
+.flow-btn:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 14px 30px -4px rgba(0, 209, 255, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  filter: brightness(1.05);
+}
+
+.flow-btn:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.flow-btn.is-melting {
+  transform: scale(0.95);
+  filter: blur(1px);
+}
+
+.flow-btn.is-done {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+}
