@@ -3,6 +3,7 @@ import './globals.css';
 import { AppProvider } from '@/context/AppContext';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
+import DynamicIsland from '@/components/DynamicIsland';
 import EmergencyModal from '@/components/EmergencyModal';
 
 export const metadata: Metadata = {
@@ -17,15 +18,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-navy-950 text-slate-100 min-h-screen flex flex-col antialiased">
+      <body className="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+        {/* Ambient Wall Lighting Canvas (Liquid Glass Foundation) */}
+        <div className="wall-ambient">
+          <div className="wall-orb wall-orb-1"></div>
+          <div className="wall-orb wall-orb-2"></div>
+          <div className="wall-orb wall-orb-3"></div>
+        </div>
+
         <AppProvider>
+          {/* Dynamic Island Capsule */}
+          <DynamicIsland />
+
+          {/* Top Glass Navigation */}
           <Header />
-          <div className="flex flex-1">
+
+          {/* Main Layout Workspace with Floating Side Dock */}
+          <div className="flex flex-1 max-w-[1720px] w-full mx-auto">
             <Sidebar />
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
+            <main className="flex-1 p-3 sm:p-5 lg:p-6 overflow-x-hidden min-w-0">
               {children}
             </main>
           </div>
+
           <EmergencyModal />
         </AppProvider>
       </body>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import PerspectiveCard from '@/components/PerspectiveCard';
 import {
   FilePlus,
   MapPin,
@@ -50,7 +51,7 @@ export default function CitizenPortalPage() {
   const [feedbackComment, setFeedbackComment] = useState('');
   const [reopenReason, setReopenReason] = useState('');
 
-  // Fetch Nearby Duplicates when location or category changes
+  // Fetch Nearby Duplicates
   useEffect(() => {
     const fetchNearby = async () => {
       setCheckingNearby(true);
@@ -102,7 +103,6 @@ export default function CitizenPortalPage() {
       const data = await res.json();
       if (data.success) {
         showToast(`Corroborated ${refNum}! Urgency boosted (+5% priority).`);
-        // Refresh nearby
         const nearbyRes = await fetch(`/api/reports/nearby?lat=${latitude}&lng=${longitude}&radius=0.8`);
         const nearbyData = await nearbyRes.json();
         setNearbyReports(nearbyData.nearby || []);
@@ -159,7 +159,7 @@ export default function CitizenPortalPage() {
     }
   };
 
-  // Submit Citizen Verification (Accept or Reopen)
+  // Submit Citizen Verification
   const handleCitizenVerification = async () => {
     if (!reviewingReport) return;
 
@@ -194,31 +194,31 @@ export default function CitizenPortalPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto perspective-container">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-navy-900 to-navy-850 p-6 rounded-2xl border border-navy-800 shadow-xl">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30">
+      <div className="glass-pane glass-rim p-6 rounded-3xl">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/40 shadow-sm">
             {t.citizen.welcome}
           </span>
-          <span className="text-xs text-slate-400">Mobile-First Civic Portal</span>
+          <span className="text-xs text-slate-400 font-medium">Mobile-First Citizen Portal</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           {t.reportForm.title}
         </h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-slate-300/80 text-xs sm:text-sm mt-1">
           {t.reportForm.subtitle}
         </p>
       </div>
 
       {/* Main Grid: Form on Left, Duplicate Detection & My Reports on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Reporting Form */}
-        <div className="lg:col-span-7 bg-navy-900 border border-navy-800 rounded-2xl p-6 shadow-lg">
+        <div className="lg:col-span-7 glass-pane glass-rim p-6 rounded-3xl shadow-xl">
           <form onSubmit={handleSubmitReport} className="space-y-5">
             {/* Category Selector */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+              <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-2">
                 {t.reportForm.categoryLabel} *
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -227,16 +227,16 @@ export default function CitizenPortalPage() {
                     key={cat.code}
                     type="button"
                     onClick={() => setCategoryId(cat.code)}
-                    className={`p-2.5 rounded-xl border text-left transition-all ${
+                    className={`p-3 rounded-2xl border text-left transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.55,1)] ${
                       categoryId === cat.code
-                        ? 'bg-cyan-500/15 border-cyan-500 text-cyan-300 shadow-sm'
-                        : 'bg-navy-950 border-navy-800 text-slate-400 hover:border-navy-700'
+                        ? 'bg-gradient-to-br from-cyan-500/20 to-teal-500/10 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/20 scale-[1.02]'
+                        : 'bg-black/20 border-white/5 text-slate-400 hover:border-white/15 hover:bg-white/5'
                     }`}
                   >
                     <p className="text-xs font-bold leading-tight truncate">
                       {lang === 'bn' ? cat.nameBn : cat.name}
                     </p>
-                    <span className="text-[10px] text-slate-500 font-medium">SLA: {cat.baseSlaHours}h</span>
+                    <span className="text-[10px] text-slate-500 font-semibold block mt-1">SLA: {cat.baseSlaHours}h</span>
                   </button>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function CitizenPortalPage() {
 
             {/* Title */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
                 {t.reportForm.titleLabel} *
               </label>
               <input
@@ -253,13 +253,13 @@ export default function CitizenPortalPage() {
                 placeholder={t.reportForm.titlePlaceholder}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-navy-950 border border-navy-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
                 {t.reportForm.descLabel} *
               </label>
               <textarea
@@ -268,25 +268,25 @@ export default function CitizenPortalPage() {
                 placeholder={t.reportForm.descPlaceholder}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-navy-950 border border-navy-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 leading-relaxed"
+                className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors shadow-inner leading-relaxed"
               />
             </div>
 
             {/* Location Section */}
-            <div className="bg-navy-950/60 p-4 rounded-xl border border-navy-800 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+            <div className="bg-black/25 p-4 rounded-2xl border border-white/10 space-y-3">
+              <span className="text-xs font-black uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4" /> {t.reportForm.locationSection}
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">
                     {t.reportForm.zoneLabel}
                   </label>
                   <select
                     value={selectedZone.code}
                     onChange={(e) => handleZoneChange(e.target.value)}
-                    className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-xs text-slate-200"
+                    className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-slate-200"
                   >
                     {PILOT_ZONES.map((z) => (
                       <option key={z.code} value={z.code}>
@@ -297,7 +297,7 @@ export default function CitizenPortalPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                  <label className="block text-[11px] font-bold text-slate-400 mb-1">
                     {t.reportForm.coordsLabel}
                   </label>
                   <div className="flex items-center gap-2">
@@ -306,21 +306,21 @@ export default function CitizenPortalPage() {
                       step="0.0001"
                       value={latitude}
                       onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                      className="w-1/2 px-2 py-1.5 bg-navy-900 border border-navy-700 rounded text-xs text-white"
+                      className="w-1/2 px-2.5 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-white"
                     />
                     <input
                       type="number"
                       step="0.0001"
                       value={longitude}
                       onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                      className="w-1/2 px-2 py-1.5 bg-navy-900 border border-navy-700 rounded text-xs text-white"
+                      className="w-1/2 px-2.5 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-white"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">
                   {t.reportForm.addressLabel} *
                 </label>
                 <input
@@ -329,17 +329,17 @@ export default function CitizenPortalPage() {
                   placeholder={t.reportForm.addressPlaceholder}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-xs text-white placeholder-slate-500"
+                  className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500"
                 />
               </div>
             </div>
 
             {/* A02 Explainable Factors: Public Safety & People Affected */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-navy-950/40 p-4 rounded-xl border border-navy-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/25 p-4 rounded-2xl border border-white/10">
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-300">Public Safety Danger (0-100)</span>
-                  <span className="font-bold text-rose-400">{safetyImpact}</span>
+                  <span className="font-bold text-slate-300">Public Safety Danger (0-100)</span>
+                  <span className="font-black text-rose-400">{safetyImpact}</span>
                 </div>
                 <input
                   type="range"
@@ -349,13 +349,13 @@ export default function CitizenPortalPage() {
                   onChange={(e) => setSafetyImpact(parseInt(e.target.value, 10))}
                   className="w-full accent-rose-500 cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-500">A02 30% Weight Factor</span>
+                <span className="text-[10px] text-slate-400">A02 30% Weight Factor</span>
               </div>
 
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-300">People Affected / Crowd (0-100)</span>
-                  <span className="font-bold text-cyan-400">{peopleAffected}</span>
+                  <span className="font-bold text-slate-300">People Affected / Crowd (0-100)</span>
+                  <span className="font-black text-cyan-400">{peopleAffected}</span>
                 </div>
                 <input
                   type="range"
@@ -363,15 +363,15 @@ export default function CitizenPortalPage() {
                   max="100"
                   value={peopleAffected}
                   onChange={(e) => setPeopleAffected(parseInt(e.target.value, 10))}
-                  className="w-full accent-cyan-500 cursor-pointer"
+                  className="w-full accent-cyan-400 cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-500">A02 15% Weight Factor</span>
+                <span className="text-[10px] text-slate-400">A02 15% Weight Factor</span>
               </div>
             </div>
 
             {/* Photo Evidence URL */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+              <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1.5">
                 {t.reportForm.photoSection}
               </label>
               <div className="flex gap-2">
@@ -380,14 +380,14 @@ export default function CitizenPortalPage() {
                   placeholder="Paste photo URL (or leave blank for standard inspection)"
                   value={photoUrl}
                   onChange={(e) => setPhotoUrl(e.target.value)}
-                  className="flex-1 px-3 py-2 bg-navy-950 border border-navy-700 rounded-xl text-xs text-white placeholder-slate-500"
+                  className="flex-1 px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
                 />
                 <button
                   type="button"
                   onClick={() => setPhotoUrl('https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80')}
-                  className="px-3 py-2 bg-navy-800 hover:bg-navy-700 text-slate-300 text-xs rounded-xl border border-navy-700 font-semibold"
+                  className="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-2xl border border-white/10 font-bold transition-all"
                 >
-                  Insert Demo Photo
+                  Demo Photo
                 </button>
               </div>
             </div>
@@ -396,7 +396,7 @@ export default function CitizenPortalPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-500 hover:opacity-95 text-navy-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"
             >
               {submitting ? (
                 <span>{t.reportForm.submitting}</span>
@@ -413,12 +413,12 @@ export default function CitizenPortalPage() {
         {/* Right Column: Duplicate Detection & My Reported Issues */}
         <div className="lg:col-span-5 space-y-6">
           {/* Duplicate Detection Alert Card */}
-          <div className="bg-navy-900 border border-navy-800 rounded-2xl p-5 shadow-lg">
+          <div className="glass-pane glass-rim p-5 rounded-3xl shadow-xl">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <span className="text-xs font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4" /> {t.reportForm.nearbyTitle}
               </span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-400 font-semibold">
                 {checkingNearby ? 'Scanning GPS...' : `${nearbyReports.length} nearby`}
               </span>
             </div>
@@ -428,24 +428,24 @@ export default function CitizenPortalPage() {
 
             <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
               {nearbyReports.length === 0 ? (
-                <div className="p-4 rounded-xl bg-navy-950/60 border border-navy-800/80 text-center text-xs text-slate-500">
+                <div className="p-4 rounded-2xl bg-black/20 border border-white/5 text-center text-xs text-slate-400">
                   No duplicate complaints found within 800m. Your report will be treated as primary incident!
                 </div>
               ) : (
                 nearbyReports.map((rep) => (
                   <div
                     key={rep.id}
-                    className="p-3 rounded-xl bg-navy-950 border border-navy-800 hover:border-navy-700 transition-colors"
+                    className="p-3.5 rounded-2xl bg-black/30 border border-white/10 hover:border-white/20 transition-all text-left"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-mono font-bold text-cyan-400">
+                      <span className="text-[11px] font-mono font-bold text-cyan-300">
                         {rep.referenceNumber}
                       </span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-slate-400 font-medium">
                         {(rep.distanceKm * 1000).toFixed(0)}m away
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-slate-200 line-clamp-1 mb-2">
+                    <p className="text-xs font-bold text-slate-200 line-clamp-1 mb-2">
                       {rep.title}
                     </p>
                     <div className="flex items-center justify-between">
@@ -455,7 +455,7 @@ export default function CitizenPortalPage() {
                       <button
                         type="button"
                         onClick={() => handleCorroborate(rep.id, rep.referenceNumber)}
-                        className="px-2.5 py-1 rounded bg-teal-500/15 hover:bg-teal-500/25 border border-teal-500/30 text-teal-300 text-[10px] font-bold flex items-center gap-1 transition-colors"
+                        className="px-3 py-1 rounded-full bg-teal-500/15 hover:bg-teal-500/25 border border-teal-500/30 text-teal-300 text-[10px] font-black flex items-center gap-1 transition-all"
                       >
                         <ThumbsUp className="w-3 h-3" />
                         <span>Corroborate (+5%)</span>
@@ -467,15 +467,15 @@ export default function CitizenPortalPage() {
             </div>
           </div>
 
-          {/* Citizen's Reported Issues & Status Verification */}
-          <div className="bg-navy-900 border border-navy-800 rounded-2xl p-5 shadow-lg">
+          {/* Citizen's Reported Issues */}
+          <div className="glass-pane glass-rim p-5 rounded-3xl shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h2 className="text-sm font-black text-white uppercase tracking-wider">
                 {t.citizen.myIssues}
               </h2>
               <button
                 onClick={fetchMyReports}
-                className="text-xs text-cyan-400 hover:underline"
+                className="text-xs text-cyan-400 hover:underline font-bold"
               >
                 Refresh
               </button>
@@ -483,24 +483,24 @@ export default function CitizenPortalPage() {
 
             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
               {myReports.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500">
+                <div className="p-4 text-center text-xs text-slate-400">
                   {t.citizen.noIssues}
                 </div>
               ) : (
                 myReports.map((r) => (
                   <div
                     key={r.id}
-                    className="p-3.5 rounded-xl bg-navy-950 border border-navy-800 space-y-2 text-left"
+                    className="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-2 text-left"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-cyan-400">
+                      <span className="text-xs font-mono font-bold text-cyan-300">
                         {r.referenceNumber}
                       </span>
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                        className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${
                           r.status === 'CITIZEN_REVIEW'
-                            ? 'bg-teal-500/20 text-teal-300 border-teal-500/30 animate-pulse'
-                            : 'bg-navy-800 text-slate-300 border-navy-700'
+                            ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 animate-pulse'
+                            : 'bg-white/5 text-slate-300 border-white/10'
                         }`}
                       >
                         {r.status}
@@ -511,10 +511,9 @@ export default function CitizenPortalPage() {
                       {r.title}
                     </p>
 
-                    {/* If Citizen Review is required, show verification prompt button! */}
                     {r.status === 'CITIZEN_REVIEW' && (
-                      <div className="pt-2 border-t border-navy-800/80 flex items-center justify-between">
-                        <span className="text-[11px] text-teal-400 font-semibold">
+                      <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+                        <span className="text-[11px] text-teal-300 font-bold">
                           Work marked resolved! Please verify:
                         </span>
                         <button
@@ -522,7 +521,7 @@ export default function CitizenPortalPage() {
                             setReviewingReport(r);
                             setReviewAction('CONFIRM');
                           }}
-                          className="px-3 py-1 rounded bg-teal-500 hover:bg-teal-400 text-navy-950 text-xs font-black shadow-sm transition-all"
+                          className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-teal-400 to-cyan-500 hover:opacity-95 text-navy-950 text-xs font-black shadow-md transition-all hover:scale-105"
                         >
                           Verify Resolution
                         </button>
@@ -536,40 +535,40 @@ export default function CitizenPortalPage() {
         </div>
       </div>
 
-      {/* Citizen Verification Modal (Requirement: Citizen verifies or rejects/reopens) */}
+      {/* Citizen Verification Modal */}
       {reviewingReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-navy-900 border border-teal-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left animate-scaleUp">
             <button
               onClick={() => setReviewingReport(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
             >
               ✕
             </button>
 
-            <span className="text-xs font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">
+            <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
               {reviewingReport.referenceNumber}
             </span>
-            <h3 className="text-lg font-bold text-white mt-1 mb-2">
+            <h3 className="text-lg font-black text-white mt-1 mb-2">
               {t.citizen.verifyResolution}
             </h3>
 
             {reviewingReport.resolutionSummary && (
-              <div className="bg-navy-950 p-3 rounded-xl border border-navy-800 text-xs text-slate-300 mb-4">
-                <span className="text-slate-400 block font-semibold mb-0.5">Field Officer Resolution Report:</span>
+              <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 mb-4">
+                <span className="text-slate-400 block font-bold mb-0.5">Field Officer Resolution Report:</span>
                 "{reviewingReport.resolutionSummary}"
               </div>
             )}
 
-            {/* Toggle Action: Confirm vs Reopen */}
+            {/* Toggle Action */}
             <div className="grid grid-cols-2 gap-2 mb-4">
               <button
                 type="button"
                 onClick={() => setReviewAction('CONFIRM')}
-                className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                className={`py-2 text-xs font-black rounded-2xl border transition-all ${
                   reviewAction === 'CONFIRM'
-                    ? 'bg-teal-500/20 border-teal-500 text-teal-300'
-                    : 'bg-navy-950 border-navy-800 text-slate-400'
+                    ? 'bg-teal-500/20 border-teal-400 text-teal-300 shadow-sm'
+                    : 'bg-black/20 border-white/10 text-slate-400'
                 }`}
               >
                 ✓ {t.citizen.confirmSatisfied}
@@ -577,10 +576,10 @@ export default function CitizenPortalPage() {
               <button
                 type="button"
                 onClick={() => setReviewAction('REOPEN')}
-                className={`py-2 text-xs font-bold rounded-xl border transition-all ${
+                className={`py-2 text-xs font-black rounded-2xl border transition-all ${
                   reviewAction === 'REOPEN'
-                    ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                    : 'bg-navy-950 border-navy-800 text-slate-400'
+                    ? 'bg-rose-500/20 border-rose-400 text-rose-300 shadow-sm'
+                    : 'bg-black/20 border-white/10 text-slate-400'
                 }`}
               >
                 ✕ {t.citizen.reopenIssue}
@@ -590,7 +589,7 @@ export default function CitizenPortalPage() {
             {reviewAction === 'CONFIRM' ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
                     {t.citizen.ratingPrompt}
                   </label>
                   <div className="flex items-center gap-2">
@@ -599,10 +598,10 @@ export default function CitizenPortalPage() {
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className={`p-2 rounded-lg border text-sm font-bold ${
+                        className={`p-2.5 rounded-xl border text-sm font-black transition-all ${
                           star <= rating
-                            ? 'bg-amber-500/20 border-amber-500 text-amber-400'
-                            : 'bg-navy-950 border-navy-800 text-slate-500'
+                            ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
+                            : 'bg-black/20 border-white/10 text-slate-500'
                         }`}
                       >
                         ★ {star}
@@ -612,7 +611,7 @@ export default function CitizenPortalPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  <label className="block text-xs font-bold text-slate-300 mb-1">
                     Feedback / Commendation Comment (Optional)
                   </label>
                   <textarea
@@ -620,29 +619,29 @@ export default function CitizenPortalPage() {
                     placeholder="Good speed, clean work site..."
                     value={feedbackComment}
                     onChange={(e) => setFeedbackComment(e.target.value)}
-                    className="w-full px-3 py-2 bg-navy-950 border border-navy-700 rounded-lg text-xs text-white"
+                    className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white"
                   />
                 </div>
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-semibold text-rose-400 mb-1">
+                <label className="block text-xs font-bold text-rose-400 mb-1">
                   Reason for Rejecting & Reopening:
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder={t.citizen.reopenReasonPlaceholder}
+                  placeholder={t.reportForm.descPlaceholder}
                   value={reopenReason}
                   onChange={(e) => setReopenReason(e.target.value)}
-                  className="w-full px-3 py-2 bg-navy-950 border border-navy-700 rounded-lg text-xs text-white placeholder-slate-500"
+                  className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
                 />
               </div>
             )}
 
             <button
               onClick={handleCitizenVerification}
-              className="w-full mt-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:scale-[1.01]"
+              className="w-full mt-6 py-3 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:scale-[1.01]"
             >
               {t.citizen.submitFeedback}
             </button>

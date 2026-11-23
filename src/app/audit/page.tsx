@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
-import { FileText, Shield, Clock, Search, RefreshCw } from 'lucide-react';
+import { FileText, Shield, Clock, Search, RefreshCw, Sparkles } from 'lucide-react';
 
 export default function AuditLogsPage() {
   const { t } = useApp();
@@ -14,7 +14,6 @@ export default function AuditLogsPage() {
     try {
       const res = await fetch('/api/analytics');
       const data = await res.json();
-      // Using reports status changes as audit events
       setLogs(data.recentReports || []);
     } catch (e) {
       console.error(e);
@@ -28,29 +27,30 @@ export default function AuditLogsPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 perspective-container">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 p-6 rounded-2xl border border-navy-800 shadow-xl">
+      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-sm">
               Accountability Log
             </span>
             <span className="text-xs text-slate-400 font-medium">
               Immutable System Audit Trail
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
             Security & Lifecycle Audit Trail
+            <Sparkles className="w-5 h-5 text-purple-400 hidden sm:inline" />
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-300/80 text-xs sm:text-sm mt-1">
             Verifiable records of every submission, automated A07 transition, field action, and citizen verification.
           </p>
         </div>
 
         <button
           onClick={fetchLogs}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors self-start md:self-auto"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all self-start md:self-auto shadow-sm"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           <span>Refresh Audit</span>
@@ -58,41 +58,41 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-navy-900 border border-navy-800 rounded-2xl overflow-hidden shadow-lg">
+      <div className="glass-pane glass-rim rounded-3xl overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-navy-950 text-slate-400 font-bold uppercase tracking-wider border-b border-navy-800">
+            <thead className="bg-black/30 text-slate-400 font-black uppercase tracking-wider border-b border-white/10">
               <tr>
-                <th className="py-3 px-4">Timestamp</th>
-                <th className="py-3 px-4">Entity Ref</th>
-                <th className="py-3 px-4">Lifecycle State</th>
-                <th className="py-3 px-4">Action Summary</th>
-                <th className="py-3 px-4">Actor / System</th>
-                <th className="py-3 px-4">Security Integrity</th>
+                <th className="py-3.5 px-4">Timestamp</th>
+                <th className="py-3.5 px-4">Entity Ref</th>
+                <th className="py-3.5 px-4">Lifecycle State</th>
+                <th className="py-3.5 px-4">Action Summary</th>
+                <th className="py-3.5 px-4">Actor / System</th>
+                <th className="py-3.5 px-4">Security Integrity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-navy-800/60">
-              {logs.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-navy-850/50 transition-colors">
-                  <td className="py-3 px-4 font-mono text-slate-400">
+            <tbody className="divide-y divide-white/5">
+              {logs.map((item) => (
+                <tr key={item.id} className="hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-mono text-slate-400">
                     {new Date(item.createdAt).toLocaleTimeString()}
                   </td>
-                  <td className="py-3 px-4 font-mono font-bold text-cyan-400">
+                  <td className="py-3.5 px-4 font-mono font-bold text-cyan-300">
                     {item.referenceNumber}
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded bg-navy-950 border border-navy-800 text-slate-200 text-[10px] font-bold">
+                  <td className="py-3.5 px-4">
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px] font-bold">
                       {item.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-slate-200 max-w-sm truncate">
+                  <td className="py-3.5 px-4 text-slate-200 max-w-sm truncate font-medium">
                     {item.title}
                   </td>
-                  <td className="py-3 px-4 text-slate-400">
+                  <td className="py-3.5 px-4 text-slate-400 font-medium">
                     AidGrid Engine v2.6
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold">
+                  <td className="py-3.5 px-4">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shadow-sm">
                       ✓ SHA-256 Verified
                     </span>
                   </td>

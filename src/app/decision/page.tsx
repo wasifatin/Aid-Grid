@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import PerspectiveCard from '@/components/PerspectiveCard';
 import {
   Cpu,
   Sparkles,
@@ -44,7 +45,7 @@ export default function DecisionIntelligencePage() {
   const [assignmentResult, setAssignmentResult] = useState<any>(null);
   const [calculating, setCalculating] = useState(false);
 
-  // Weights Config State (Administrator Tuning)
+  // Weights Config State
   const [safetyWeight, setSafetyWeight] = useState(0.30);
   const [severityWeight, setSeverityWeight] = useState(0.25);
   const [peopleWeight, setPeopleWeight] = useState(0.15);
@@ -135,7 +136,7 @@ export default function DecisionIntelligencePage() {
     corroborationWeight,
   ]);
 
-  // Save Config to DB (A02 Admin Configuration without code modification)
+  // Save Config to DB
   const handleSaveConfig = async () => {
     try {
       const res = await fetch('/api/decision/config', {
@@ -164,10 +165,9 @@ export default function DecisionIntelligencePage() {
     }
   };
 
-  // Test Scenario Presets for Judges (A02 Evaluation)
+  // Test Scenario Presets for Judges
   const applyTestScenario = (scenario: number) => {
     if (scenario === 1) {
-      // High-severity hazard
       setSafety(95);
       setSeverity(90);
       setPeople(85);
@@ -177,7 +177,6 @@ export default function DecisionIntelligencePage() {
       setSelectedCategory('ROADS');
       showToast('Loaded Scenario 1: High-Severity Arterial Infrastructure Hazard (Expect: Critical > 80 pts)');
     } else if (scenario === 2) {
-      // Low-severity maintenance issue
       setSafety(20);
       setSeverity(25);
       setPeople(30);
@@ -187,14 +186,12 @@ export default function DecisionIntelligencePage() {
       setSelectedCategory('GENERAL');
       showToast('Loaded Scenario 2: Low-Severity Municipal Park Bench (Expect: Low < 35 pts)');
     } else if (scenario === 3) {
-      // Nearest team lacks required certification (Conflict test)
       setSafety(80);
       setSeverity(80);
-      setSelectedCategory('LIGHTS'); // Requires HIGH_VOLTAGE_ELEC
-      setSelectedZoneId('DSCC-Z5'); // Old Dhaka where no 440V electrical team is stationed
+      setSelectedCategory('LIGHTS');
+      setSelectedZoneId('DSCC-Z5');
       showToast('Loaded Scenario 3: Missing Skill / Certification Conflict (Expect: Infeasible Outcome)');
     } else if (scenario === 4) {
-      // All qualified teams unavailable
       setSafety(75);
       setSeverity(70);
       setSelectedCategory('TREES');
@@ -203,12 +200,12 @@ export default function DecisionIntelligencePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 perspective-container">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 p-6 rounded-2xl border border-navy-800 shadow-xl">
+      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm">
               Advanced Challenge A02
             </span>
             <span className="text-xs text-slate-400 font-medium">
@@ -218,48 +215,48 @@ export default function DecisionIntelligencePage() {
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             {t.decision.title}
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-300/80 text-xs sm:text-sm mt-1">
             {t.decision.subtitle}
           </p>
         </div>
 
         <button
           onClick={runEvaluation}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors self-start md:self-auto"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all self-start md:self-auto shadow-sm"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${calculating ? 'animate-spin' : ''}`} />
           <span>Re-Evaluate</span>
         </button>
       </div>
 
-      {/* A02 Judge Demonstration Presets Bar */}
-      <div className="bg-navy-900/90 border border-navy-700 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase text-amber-400">
-          <Play className="w-4 h-4" />
+      {/* A02 Judge Demonstration Presets Bar (Glass Capsule Bar) */}
+      <div className="glass-pane glass-rim p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-3 shadow-lg">
+        <div className="flex items-center gap-2 text-xs font-black uppercase text-amber-300">
+          <Play className="w-4 h-4 text-amber-400" />
           <span>Judge Test Scenarios (1-Click Presets):</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => applyTestScenario(1)}
-            className="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
           >
             1. High-Hazard Sinkhole
           </button>
           <button
             onClick={() => applyTestScenario(2)}
-            className="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
           >
-            2. Low-Severity Park Bench
+            2. Low-Severity Bench
           </button>
           <button
             onClick={() => applyTestScenario(3)}
-            className="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-xs font-semibold text-rose-300 transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-xs font-bold text-rose-300 transition-all hover:scale-105"
           >
             3. Uncertified Skill Conflict
           </button>
           <button
             onClick={() => applyTestScenario(4)}
-            className="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
           >
             4. Capacity Saturation
           </button>
@@ -269,10 +266,10 @@ export default function DecisionIntelligencePage() {
       {/* Main Grid: Priority Engine on Left, Assignment Recommendation on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Factor Sliders & Score Meter */}
-        <div className="lg:col-span-6 bg-navy-900 border border-navy-800 rounded-2xl p-6 shadow-lg space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-navy-800">
+        <div className="lg:col-span-6 glass-pane glass-rim p-6 rounded-3xl shadow-xl space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-cyan-400" />
                 Explainable Priority Engine
               </h2>
@@ -280,7 +277,7 @@ export default function DecisionIntelligencePage() {
             </div>
             {priorityResult && (
               <span
-                className={`text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${
+                className={`text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm ${
                   priorityResult.priorityBand === 'CRITICAL'
                     ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
                     : priorityResult.priorityBand === 'HIGH'
@@ -296,17 +293,16 @@ export default function DecisionIntelligencePage() {
           </div>
 
           {/* Formula Display Box */}
-          <div className="bg-navy-950 p-3 rounded-xl border border-navy-800 text-[11px] font-mono text-cyan-300 leading-relaxed">
+          <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-[11px] font-mono text-cyan-300 leading-relaxed shadow-inner">
             {t.decision.formula}
           </div>
 
           {/* 6 Normalized Factor Sliders */}
           <div className="space-y-4">
-            {/* Factor 1: Safety */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.safety} ({(safetyWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-rose-400">{safety}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.safety} ({(safetyWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-rose-400">{safety}/100</span>
               </div>
               <input
                 type="range"
@@ -318,11 +314,10 @@ export default function DecisionIntelligencePage() {
               />
             </div>
 
-            {/* Factor 2: Severity */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.severity} ({(severityWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-orange-400">{severity}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.severity} ({(severityWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-orange-400">{severity}/100</span>
               </div>
               <input
                 type="range"
@@ -334,11 +329,10 @@ export default function DecisionIntelligencePage() {
               />
             </div>
 
-            {/* Factor 3: People Affected */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.people} ({(peopleWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-cyan-400">{people}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.people} ({(peopleWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-cyan-400">{people}/100</span>
               </div>
               <input
                 type="range"
@@ -346,15 +340,14 @@ export default function DecisionIntelligencePage() {
                 max="100"
                 value={people}
                 onChange={(e) => setPeople(parseInt(e.target.value, 10))}
-                className="w-full accent-cyan-500 cursor-pointer"
+                className="w-full accent-cyan-400 cursor-pointer"
               />
             </div>
 
-            {/* Factor 4: Location Importance */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.location} ({(locationWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-teal-400">{location}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.location} ({(locationWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-teal-300">{location}/100</span>
               </div>
               <input
                 type="range"
@@ -366,11 +359,10 @@ export default function DecisionIntelligencePage() {
               />
             </div>
 
-            {/* Factor 5: SLA Elapsed Pressure */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.sla} ({(slaWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-indigo-400">{sla}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.sla} ({(slaWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-indigo-300">{sla}/100</span>
               </div>
               <input
                 type="range"
@@ -382,11 +374,10 @@ export default function DecisionIntelligencePage() {
               />
             </div>
 
-            {/* Factor 6: Corroboration */}
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-semibold text-slate-300">{t.decision.corroboration} ({(corroborationWeight * 100).toFixed(0)}%)</span>
-                <span className="font-bold text-emerald-400">{corroboration}/100</span>
+                <span className="font-bold text-slate-300">{t.decision.corroboration} ({(corroborationWeight * 100).toFixed(0)}%)</span>
+                <span className="font-black text-emerald-400">{corroboration}/100</span>
               </div>
               <input
                 type="range"
@@ -399,20 +390,20 @@ export default function DecisionIntelligencePage() {
             </div>
           </div>
 
-          {/* Narrative Explanation Box */}
+          {/* Narrative Explanation */}
           {priorityResult && (
-            <div className="bg-navy-950 p-4 rounded-xl border border-navy-800 text-xs space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+            <div className="bg-black/25 p-4 rounded-2xl border border-white/10 text-xs space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
                 Deterministic Calculation Narrative:
               </span>
               <p className="text-slate-300 leading-relaxed">
                 {priorityResult.narrativeExplanation}
               </p>
-              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-navy-800">
+              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/10">
                 {priorityResult.rulesApplied?.map((rule: string) => (
                   <span
                     key={rule}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20"
+                    className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-400/30"
                   >
                     {rule}
                   </span>
@@ -421,16 +412,16 @@ export default function DecisionIntelligencePage() {
             </div>
           )}
 
-          {/* Live Weight Tuning Section (Requirement: Configure weights without code modification) */}
-          <div className="pt-4 border-t border-navy-800">
+          {/* Live Weight Tuning Section */}
+          <div className="pt-4 border-t border-white/10">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Scale className="w-3.5 h-3.5 text-cyan-400" />
                 {t.decision.tuningHeader}
               </span>
               <button
                 onClick={handleSaveConfig}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-navy-950 font-bold text-xs shadow-sm transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:opacity-95 text-navy-950 font-black text-xs shadow-md transition-all hover:scale-105"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save Config</span>
@@ -438,33 +429,33 @@ export default function DecisionIntelligencePage() {
             </div>
             <div className="grid grid-cols-3 gap-2 text-xs">
               <div>
-                <label className="text-[10px] text-slate-400">Safety Wgt</label>
+                <label className="text-[10px] text-slate-400 font-bold">Safety Wgt</label>
                 <input
                   type="number"
                   step="0.05"
                   value={safetyWeight}
                   onChange={(e) => setSafetyWeight(parseFloat(e.target.value))}
-                  className="w-full px-2 py-1 bg-navy-950 border border-navy-700 rounded text-slate-200"
+                  className="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-xl text-slate-200"
                 />
               </div>
               <div>
-                <label className="text-[10px] text-slate-400">Severity Wgt</label>
+                <label className="text-[10px] text-slate-400 font-bold">Severity Wgt</label>
                 <input
                   type="number"
                   step="0.05"
                   value={severityWeight}
                   onChange={(e) => setSeverityWeight(parseFloat(e.target.value))}
-                  className="w-full px-2 py-1 bg-navy-950 border border-navy-700 rounded text-slate-200"
+                  className="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-xl text-slate-200"
                 />
               </div>
               <div>
-                <label className="text-[10px] text-slate-400">People Wgt</label>
+                <label className="text-[10px] text-slate-400 font-bold">People Wgt</label>
                 <input
                   type="number"
                   step="0.05"
                   value={peopleWeight}
                   onChange={(e) => setPeopleWeight(parseFloat(e.target.value))}
-                  className="w-full px-2 py-1 bg-navy-950 border border-navy-700 rounded text-slate-200"
+                  className="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-xl text-slate-200"
                 />
               </div>
             </div>
@@ -472,10 +463,10 @@ export default function DecisionIntelligencePage() {
         </div>
 
         {/* Right Column: Intelligent Assignment & Constraint Validation */}
-        <div className="lg:col-span-6 bg-navy-900 border border-navy-800 rounded-2xl p-6 shadow-lg space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-navy-800">
+        <div className="lg:col-span-6 glass-pane glass-rim p-6 rounded-3xl shadow-xl space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
                 <Compass className="w-4 h-4 text-teal-400" />
                 Intelligent Team Assignment Engine
               </h2>
@@ -483,13 +474,13 @@ export default function DecisionIntelligencePage() {
             </div>
             {assignmentResult && (
               <span
-                className={`text-xs font-bold px-2.5 py-0.5 rounded ${
+                className={`text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm ${
                   assignmentResult.isFeasible
-                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-400/40'
+                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
                 }`}
               >
-                {assignmentResult.isFeasible ? 'Assignment Feasible' : 'Infeasible / Conflict'}
+                {assignmentResult.isFeasible ? 'Feasible' : 'Infeasible / Conflict'}
               </span>
             )}
           </div>
@@ -497,11 +488,11 @@ export default function DecisionIntelligencePage() {
           {/* Test Setup Inputs */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Incident Category</label>
+              <label className="block text-slate-400 mb-1 font-bold">Incident Category</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-navy-950 border border-navy-700 rounded-lg text-slate-200"
+                className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-2xl text-slate-200"
               >
                 {CATEGORIES_LIST.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -512,11 +503,11 @@ export default function DecisionIntelligencePage() {
             </div>
 
             <div>
-              <label className="block text-slate-400 mb-1 font-semibold">Jurisdiction Service Zone</label>
+              <label className="block text-slate-400 mb-1 font-bold">Jurisdiction Zone</label>
               <select
                 value={selectedZoneId}
                 onChange={(e) => setSelectedZoneId(e.target.value)}
-                className="w-full px-3 py-2 bg-navy-950 border border-navy-700 rounded-lg text-slate-200"
+                className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-2xl text-slate-200"
               >
                 {PILOT_ZONES.map((z) => (
                   <option key={z.code} value={z.code}>
@@ -529,13 +520,13 @@ export default function DecisionIntelligencePage() {
 
           {/* Feasible Recommended Team Card */}
           {assignmentResult?.isFeasible && assignmentResult.recommendedTeam ? (
-            <div className="bg-gradient-to-br from-navy-950 to-navy-900 border border-teal-500/40 rounded-2xl p-5 space-y-3">
+            <div className="bg-black/30 border border-teal-500/40 rounded-3xl p-5 space-y-3 shadow-lg">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+                <span className="text-xs font-black uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-teal-400" />
                   {t.decision.bestTeam}
                 </span>
-                <span className="text-xs font-mono font-bold text-white px-2 py-0.5 rounded bg-teal-500/15 border border-teal-500/30">
+                <span className="text-xs font-mono font-bold text-white px-2.5 py-0.5 rounded-full bg-teal-500/20 border border-teal-500/30">
                   Cost: {assignmentResult.recommendedTeam.assignmentCost} pts
                 </span>
               </div>
@@ -547,19 +538,19 @@ export default function DecisionIntelligencePage() {
                 Department: {assignmentResult.recommendedTeam.departmentName}
               </p>
 
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-navy-800 text-xs">
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-white/10 text-xs">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Estimated Distance</span>
-                  <span className="font-bold text-cyan-400">{assignmentResult.recommendedTeam.distanceKm} km</span>
+                  <span className="text-slate-400 block text-[10px] font-bold">Estimated Distance</span>
+                  <span className="font-black text-cyan-300">{assignmentResult.recommendedTeam.distanceKm} km</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Workload / Capacity</span>
-                  <span className="font-bold text-slate-200">
+                  <span className="text-slate-400 block text-[10px] font-bold">Workload / Capacity</span>
+                  <span className="font-black text-slate-200">
                     {assignmentResult.recommendedTeam.activeWorkload} / {assignmentResult.recommendedTeam.capacity}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Mandatory Skill</span>
+                  <span className="text-slate-400 block text-[10px] font-bold">Mandatory Skill</span>
                   <span className="font-bold text-teal-300">
                     {assignmentResult.recommendedTeam.verifiedSkillName || 'Verified'}
                   </span>
@@ -568,12 +559,12 @@ export default function DecisionIntelligencePage() {
             </div>
           ) : null}
 
-          {/* Conflict Alert & Infeasibility Analysis (Requirement: When no eligible team exists) */}
+          {/* Conflict Alert & Infeasibility Analysis */}
           {assignmentResult && !assignmentResult.isFeasible && (
-            <div className="bg-rose-950/40 border border-rose-500/50 rounded-2xl p-5 space-y-3 text-left">
+            <div className="bg-rose-950/30 border border-rose-500/50 rounded-3xl p-5 space-y-3 text-left shadow-lg">
               <div className="flex items-center gap-2 text-rose-400">
                 <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0" />
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-black text-white">
                   {t.decision.conflictAlert}
                 </h3>
               </div>
@@ -582,8 +573,8 @@ export default function DecisionIntelligencePage() {
                 {assignmentResult.infeasibilityReason}
               </p>
 
-              <div className="bg-navy-950/80 p-3 rounded-xl border border-navy-800 text-xs text-slate-300 space-y-1">
-                <span className="font-semibold text-slate-200 block">Automated Safeguard Action:</span>
+              <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 space-y-1">
+                <span className="font-bold text-slate-200 block">Automated Safeguard Action:</span>
                 <p className="text-[11px] text-slate-400">
                   System strictly prevents invalid assignment. Issue is shifted into Supervisor Review queue and flagged in the audit log.
                 </p>
@@ -594,18 +585,18 @@ export default function DecisionIntelligencePage() {
           {/* Ineligible Candidate Teams Breakdown */}
           {assignmentResult?.ineligibleTeams?.length > 0 && (
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-400 block mb-2">
                 Evaluated Teams (Constraint Rejection Details):
               </span>
               <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
                 {assignmentResult.ineligibleTeams.map((team: any) => (
                   <div
                     key={team.teamId}
-                    className="p-3 rounded-xl bg-navy-950 border border-navy-800 text-xs space-y-1"
+                    className="p-3.5 rounded-2xl bg-black/25 border border-white/10 text-xs space-y-1"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-slate-300">{team.teamName}</span>
-                      <span className="text-[10px] text-rose-400 font-semibold">Rejected</span>
+                      <span className="text-[10px] text-rose-400 font-black">Rejected</span>
                     </div>
                     <ul className="text-[11px] text-slate-400 list-disc list-inside">
                       {team.ineligibilityReasons?.map((reason: string, i: number) => (

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
+import PerspectiveCard from '@/components/PerspectiveCard';
 import {
   AlertCircle,
   Clock,
@@ -22,6 +23,7 @@ import {
   Calendar,
   Sparkles,
   Layers,
+  Flame,
 } from 'lucide-react';
 import {
   BarChart,
@@ -70,135 +72,154 @@ export default function CommandCenterPage() {
   const PRIORITY_COLORS: Record<string, string> = {
     CRITICAL: '#f43f5e',
     HIGH: '#f97316',
-    MEDIUM: '#06b6d4',
+    MEDIUM: '#00d1ff',
     LOW: '#10b981',
   };
 
   const STATUS_BADGE_CLASSES: Record<string, string> = {
-    SUBMITTED: 'bg-slate-800 text-slate-300 border-slate-700',
-    VALIDATING: 'bg-indigo-950/60 text-indigo-300 border-indigo-800',
-    TRIAGED: 'bg-cyan-950/60 text-cyan-300 border-cyan-800',
-    ASSIGNED: 'bg-blue-950/60 text-blue-300 border-blue-800',
-    ACKNOWLEDGED: 'bg-sky-950/60 text-sky-300 border-sky-800',
-    IN_PROGRESS: 'bg-amber-950/60 text-amber-300 border-amber-800',
-    NEEDS_INFORMATION: 'bg-purple-950/60 text-purple-300 border-purple-800',
-    RESOLVED: 'bg-emerald-950/60 text-emerald-300 border-emerald-800',
-    CITIZEN_REVIEW: 'bg-teal-950/60 text-teal-300 border-teal-800',
-    CLOSED: 'bg-slate-900 text-slate-400 border-slate-800',
-    REOPENED: 'bg-rose-950/60 text-rose-300 border-rose-800',
-    ESCALATED: 'bg-rose-900/80 text-rose-200 border-rose-700 font-bold animate-pulse',
-    REJECTED: 'bg-gray-900 text-gray-500 border-gray-800',
+    SUBMITTED: 'bg-slate-800/60 text-slate-300 border-slate-700/60',
+    VALIDATING: 'bg-indigo-950/60 text-indigo-300 border-indigo-700/60',
+    TRIAGED: 'bg-cyan-950/60 text-cyan-300 border-cyan-700/60',
+    ASSIGNED: 'bg-blue-950/60 text-blue-300 border-blue-700/60',
+    ACKNOWLEDGED: 'bg-sky-950/60 text-sky-300 border-sky-700/60',
+    IN_PROGRESS: 'bg-amber-950/60 text-amber-300 border-amber-700/60',
+    NEEDS_INFORMATION: 'bg-purple-950/60 text-purple-300 border-purple-700/60',
+    RESOLVED: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/60',
+    CITIZEN_REVIEW: 'bg-teal-950/60 text-teal-300 border-teal-700/60',
+    CLOSED: 'bg-slate-900/60 text-slate-400 border-slate-800/60',
+    REOPENED: 'bg-rose-950/60 text-rose-300 border-rose-700/60',
+    ESCALATED: 'bg-rose-900/70 text-rose-200 border-rose-600/70 font-bold animate-pulse',
+    REJECTED: 'bg-gray-900/60 text-gray-500 border-gray-800/60',
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner / Heading */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 p-6 rounded-2xl border border-navy-800 shadow-xl">
+    <div className="space-y-6 perspective-container">
+      {/* Top Banner (Liquid Glass Pane) */}
+      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm">
               {t.nav.overview}
             </span>
             <span className="text-xs text-slate-400 font-medium">
-              Enterprise Civic Operations
+              Enterprise Civic Operations Console
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
             Dhaka Civic Operations Command Center
+            <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse hidden sm:inline" />
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-300/80 text-xs sm:text-sm mt-1 max-w-2xl">
             Real-time multi-department monitoring, A02 priority intelligence, and accountable resolution pipeline.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => fetchData()}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-navy-800 hover:bg-navy-700 border border-navy-700 text-xs font-semibold text-slate-200 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
           <Link
             href="/citizen"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-navy-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/25 transition-all hover:scale-105"
           >
             <span>+ Report Issue</span>
           </Link>
         </div>
       </div>
 
-      {/* Metric Cards Grid (Derived from real DB) */}
+      {/* 3D Perspective Metric Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Reports */}
-        <div className="bg-navy-900 border border-navy-800/80 rounded-xl p-4 shadow-sm hover:border-navy-700 transition-colors">
+        <PerspectiveCard className="p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">{t.dashboard.totalReports}</span>
-            <Layers className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              {t.dashboard.totalReports}
+            </span>
+            <div className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30">
+              <Layers className="w-4 h-4 text-cyan-400" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-3xl font-black text-white tracking-tight">
             {analytics?.summary?.total ?? '—'}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5 pt-2 border-t border-white/5">
             <span className="text-cyan-400 font-bold">{analytics?.summary?.activeIssues ?? 0}</span> active in pipeline
           </div>
-        </div>
+        </PerspectiveCard>
 
         {/* Card 2: Critical & High Priority */}
-        <div className="bg-navy-900 border border-navy-800/80 rounded-xl p-4 shadow-sm hover:border-navy-700 transition-colors">
+        <PerspectiveCard className="p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">{t.dashboard.criticalHigh}</span>
-            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-300">
+              {t.dashboard.criticalHigh}
+            </span>
+            <div className="p-2 rounded-xl bg-rose-500/15 border border-rose-500/30">
+              <Flame className="w-4 h-4 text-rose-400" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-rose-400">
+          <div className="text-3xl font-black text-rose-400 tracking-tight">
             {analytics?.summary?.criticalHigh ?? '—'}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">
+          <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5 pt-2 border-t border-white/5">
             Urgent public safety hazards
           </div>
-        </div>
+        </PerspectiveCard>
 
         {/* Card 3: In Progress & Field Dispatch */}
-        <div className="bg-navy-900 border border-navy-800/80 rounded-xl p-4 shadow-sm hover:border-navy-700 transition-colors">
+        <PerspectiveCard className="p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">{t.dashboard.inProgress}</span>
-            <TrendingUp className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+              {t.dashboard.inProgress}
+            </span>
+            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30">
+              <TrendingUp className="w-4 h-4 text-amber-400" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-amber-400">
+          <div className="text-3xl font-black text-amber-400 tracking-tight">
             {analytics?.summary?.inProgress ?? '—'}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">
+          <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5 pt-2 border-t border-white/5">
             Field technicians on site
           </div>
-        </div>
+        </PerspectiveCard>
 
         {/* Card 4: SLA Compliance Rate */}
-        <div className="bg-navy-900 border border-navy-800/80 rounded-xl p-4 shadow-sm hover:border-navy-700 transition-colors">
+        <PerspectiveCard className="p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">{t.dashboard.slaCompliance}</span>
-            <ShieldAlert className="w-4 h-4 text-teal-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
+              {t.dashboard.slaCompliance}
+            </span>
+            <div className="p-2 rounded-xl bg-teal-500/15 border border-teal-500/30">
+              <ShieldAlert className="w-4 h-4 text-teal-400" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-teal-400">
+          <div className="text-3xl font-black text-teal-400 tracking-tight">
             {analytics?.summary?.slaCompliance ?? '100'}%
           </div>
-          <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span className="text-rose-400 font-bold">{analytics?.summary?.overdueSla ?? 0}</span> breached SLA
+          <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5 pt-2 border-t border-white/5">
+            <span className="text-rose-400 font-bold">{analytics?.summary?.overdueSla ?? 0}</span> breached deadline
           </div>
-        </div>
+        </PerspectiveCard>
       </div>
 
       {/* Analytics Visualizations Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart 1: Category Distribution */}
-        <div className="lg:col-span-2 bg-navy-900 border border-navy-800 rounded-2xl p-5">
+        <div className="lg:col-span-2 glass-pane glass-rim p-6 rounded-3xl">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 Reports by Issue Category
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                  REAL-TIME
+                </span>
               </h2>
               <p className="text-xs text-slate-400">Distribution across municipal pilot sectors</p>
             </div>
-            <span className="text-xs font-medium text-slate-400">Real-time DB</span>
           </div>
 
           <div className="h-64 w-full">
@@ -207,19 +228,32 @@ export default function CommandCenterPage() {
                 <BarChart data={analytics.categoryDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
                   <XAxis
                     dataKey="name"
-                    stroke="#64748b"
+                    stroke="#94a3b8"
                     fontSize={10}
                     tickLine={false}
                     interval={0}
                     angle={-20}
                     textAnchor="end"
                   />
-                  <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0b132b', borderColor: '#1c2541', borderRadius: '0.5rem', fontSize: '12px' }}
+                    contentStyle={{
+                      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
+                      backdropFilter: 'blur(16px)',
+                      borderRadius: '1rem',
+                      fontSize: '12px',
+                      color: '#f8fafc',
+                    }}
                     itemStyle={{ color: '#00d1ff' }}
                   />
-                  <Bar dataKey="count" fill="#00b4d8" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" fill="url(#cyanTealGrad)" radius={[6, 6, 0, 0]} />
+                  <defs>
+                    <linearGradient id="cyanTealGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#00d1ff" />
+                      <stop offset="100%" stopColor="#0ea5e9" />
+                    </linearGradient>
+                  </defs>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -231,15 +265,15 @@ export default function CommandCenterPage() {
         </div>
 
         {/* Chart 2: Priority Breakdown Pie */}
-        <div className="bg-navy-900 border border-navy-800 rounded-2xl p-5">
-          <div className="mb-4">
+        <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col justify-between">
+          <div>
             <h2 className="text-sm font-bold text-white uppercase tracking-wider">
               A02 Priority Tiers
             </h2>
             <p className="text-xs text-slate-400">Calculated by Explainable Engine</p>
           </div>
 
-          <div className="h-48 w-full flex items-center justify-center">
+          <div className="h-44 w-full flex items-center justify-center my-2">
             {analytics?.priorityBreakdown ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -247,66 +281,72 @@ export default function CommandCenterPage() {
                     data={[
                       { name: 'Critical', value: analytics.priorityBreakdown.critical, color: '#f43f5e' },
                       { name: 'High', value: analytics.priorityBreakdown.high, color: '#f97316' },
-                      { name: 'Medium', value: analytics.priorityBreakdown.medium, color: '#06b6d4' },
+                      { name: 'Medium', value: analytics.priorityBreakdown.medium, color: '#00d1ff' },
                       { name: 'Low', value: analytics.priorityBreakdown.low, color: '#10b981' },
                     ]}
                     cx="50%"
                     cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={4}
+                    innerRadius={48}
+                    outerRadius={68}
+                    paddingAngle={5}
                     dataKey="value"
                   >
                     {[
                       { color: '#f43f5e' },
                       { color: '#f97316' },
-                      { color: '#06b6d4' },
+                      { color: '#00d1ff' },
                       { color: '#10b981' },
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0b132b', borderColor: '#1c2541', borderRadius: '0.5rem', fontSize: '12px' }}
+                    contentStyle={{
+                      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
+                      backdropFilter: 'blur(16px)',
+                      borderRadius: '0.75rem',
+                      fontSize: '12px',
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-navy-800 text-xs">
+          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10 text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-              <span className="text-slate-300">Critical ({analytics?.priorityBreakdown?.critical ?? 0})</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50"></span>
+              <span className="text-slate-300 font-medium">Critical ({analytics?.priorityBreakdown?.critical ?? 0})</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
-              <span className="text-slate-300">High ({analytics?.priorityBreakdown?.high ?? 0})</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50"></span>
+              <span className="text-slate-300 font-medium">High ({analytics?.priorityBreakdown?.high ?? 0})</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-              <span className="text-slate-300">Medium ({analytics?.priorityBreakdown?.medium ?? 0})</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50"></span>
+              <span className="text-slate-300 font-medium">Medium ({analytics?.priorityBreakdown?.medium ?? 0})</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span className="text-slate-300">Low ({analytics?.priorityBreakdown?.low ?? 0})</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+              <span className="text-slate-300 font-medium">Low ({analytics?.priorityBreakdown?.low ?? 0})</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Interactive Reports Table Section */}
-      <div className="bg-navy-900 border border-navy-800 rounded-2xl overflow-hidden shadow-lg">
+      {/* Interactive Reports Table Section (Liquid Glass Table Pane) */}
+      <div className="glass-pane glass-rim rounded-3xl overflow-hidden shadow-2xl">
         {/* Table Filter Controls */}
-        <div className="p-4 border-b border-navy-800 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-navy-950/40">
+        <div className="p-4 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/[0.02]">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder={t.dashboard.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-navy-900 border border-navy-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+              className="w-full pl-9 pr-3 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>
 
@@ -315,7 +355,7 @@ export default function CommandCenterPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 bg-navy-900 border border-navy-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="px-3.5 py-2 bg-black/30 border border-white/10 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="">{t.dashboard.quickFilter} (All)</option>
               <option value="SUBMITTED">SUBMITTED</option>
@@ -333,7 +373,7 @@ export default function CommandCenterPage() {
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(e.target.value)}
-              className="px-3 py-2 bg-navy-900 border border-navy-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="px-3.5 py-2 bg-black/30 border border-white/10 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
             >
               <option value="">{t.dashboard.allPriorities}</option>
               <option value="CRITICAL">Critical (80-100)</option>
@@ -347,22 +387,22 @@ export default function CommandCenterPage() {
         {/* Table View */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-navy-950 text-slate-400 font-bold uppercase tracking-wider border-b border-navy-800">
+            <thead className="bg-black/30 text-slate-400 font-black uppercase tracking-wider border-b border-white/10">
               <tr>
-                <th className="py-3 px-4">Ref Number</th>
-                <th className="py-3 px-4">Issue Details</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Zone & Coordinates</th>
-                <th className="py-3 px-4">A02 Priority</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Assigned Team</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3.5 px-4">Ref Number</th>
+                <th className="py-3.5 px-4">Issue Details</th>
+                <th className="py-3.5 px-4">Category</th>
+                <th className="py-3.5 px-4">Zone & Coordinates</th>
+                <th className="py-3.5 px-4">A02 Priority</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4">Assigned Team</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-navy-800/60">
+            <tbody className="divide-y divide-white/5">
               {reports.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-slate-500">
+                  <td colSpan={8} className="py-10 text-center text-slate-500">
                     No reports match the current filter criteria.
                   </td>
                 </tr>
@@ -370,39 +410,39 @@ export default function CommandCenterPage() {
                 reports.map((report) => (
                   <tr
                     key={report.id}
-                    className="hover:bg-navy-850/50 transition-colors group cursor-pointer"
+                    className="hover:bg-white/[0.04] transition-all group cursor-pointer"
                     onClick={() => setSelectedReport(report)}
                   >
-                    <td className="py-3 px-4 font-mono font-bold text-cyan-400">
+                    <td className="py-3.5 px-4 font-mono font-bold text-cyan-300">
                       {report.referenceNumber}
                     </td>
-                    <td className="py-3 px-4 max-w-xs">
-                      <p className="font-semibold text-slate-100 truncate group-hover:text-cyan-300 transition-colors">
+                    <td className="py-3.5 px-4 max-w-xs">
+                      <p className="font-bold text-slate-100 truncate group-hover:text-cyan-300 transition-colors">
                         {report.title}
                       </p>
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">
                         {report.address}
                       </p>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded bg-navy-800 border border-navy-700 text-slate-300 text-[11px] font-medium">
+                    <td className="py-3.5 px-4">
+                      <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] font-semibold">
                         {lang === 'bn' ? report.category?.nameBn || report.category?.name : report.category?.name}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-300">
+                    <td className="py-3.5 px-4 text-slate-300">
                       <div className="flex items-center gap-1 text-[11px]">
-                        <MapPin className="w-3 h-3 text-slate-500" />
+                        <MapPin className="w-3 h-3 text-slate-400" />
                         <span className="truncate max-w-[130px]">{report.serviceZone?.name || 'Dhaka Zone'}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
+                          className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm"
                           style={{
-                            backgroundColor: `${PRIORITY_COLORS[report.priority]}15`,
+                            backgroundColor: `${PRIORITY_COLORS[report.priority]}18`,
                             color: PRIORITY_COLORS[report.priority],
-                            borderColor: `${PRIORITY_COLORS[report.priority]}35`,
+                            borderColor: `${PRIORITY_COLORS[report.priority]}40`,
                             borderWidth: 1,
                           }}
                         >
@@ -410,31 +450,31 @@ export default function CommandCenterPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border ${
-                          STATUS_BADGE_CLASSES[report.status] || 'bg-navy-800 text-slate-300'
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm ${
+                          STATUS_BADGE_CLASSES[report.status] || 'bg-white/5 text-slate-300'
                         }`}
                       >
                         {t.status[report.status as keyof typeof t.status] || report.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-300 text-[11px]">
+                    <td className="py-3.5 px-4 text-slate-300 text-[11px]">
                       {report.assignments?.[0]?.team?.name ? (
-                        <span className="text-teal-400 font-medium truncate block max-w-[140px]">
+                        <span className="text-teal-300 font-semibold truncate block max-w-[140px]">
                           {report.assignments[0].team.name}
                         </span>
                       ) : (
                         <span className="text-slate-500 italic">Unassigned</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedReport(report);
                         }}
-                        className="p-1 rounded-lg bg-navy-800 hover:bg-navy-700 text-slate-300 hover:text-cyan-400 transition-colors"
+                        className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors"
                         title="View Report Details"
                       >
                         <Eye className="w-4 h-4" />
@@ -448,23 +488,23 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
-      {/* Report Details Drawer / Modal */}
+      {/* Report Details Drawer (Liquid Frosted Glass Sheet) */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-navy-900 border border-navy-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative animate-scaleUp">
             <button
               onClick={() => setSelectedReport(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
             >
               ✕
             </button>
 
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono font-bold text-cyan-400 px-2.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">
+              <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 shadow-sm">
                 {selectedReport.referenceNumber}
               </span>
               <span
-                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                   STATUS_BADGE_CLASSES[selectedReport.status] || ''
                 }`}
               >
@@ -479,7 +519,7 @@ export default function CommandCenterPage() {
               {selectedReport.description}
             </p>
 
-            {/* Evidence Photo if present */}
+            {/* Evidence Photo */}
             {selectedReport.resolutionEvidenceUrl && (
               <div className="mb-4">
                 <span className="text-xs font-bold text-slate-400 block mb-1">
@@ -488,13 +528,13 @@ export default function CommandCenterPage() {
                 <img
                   src={selectedReport.resolutionEvidenceUrl}
                   alt="Resolution Evidence"
-                  className="rounded-xl border border-navy-700 h-44 w-full object-cover"
+                  className="rounded-2xl border border-white/10 h-44 w-full object-cover shadow-lg"
                 />
               </div>
             )}
 
-            {/* A02 Decision Intelligence Breakdown Box */}
-            <div className="bg-navy-950 rounded-xl p-4 border border-navy-800 mb-4">
+            {/* A02 Decision Breakdown Box */}
+            <div className="glass-pane p-4 rounded-2xl mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase text-cyan-400 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" /> A02 Decision Breakdown
@@ -503,7 +543,7 @@ export default function CommandCenterPage() {
                   Score: {selectedReport.priorityScore?.toFixed(1)}/100 [{selectedReport.priority}]
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-2 border-t border-navy-800">
+              <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-2 border-t border-white/10">
                 <div>Safety: <span className="text-white font-bold">{selectedReport.safetyScore}</span></div>
                 <div>Severity: <span className="text-white font-bold">{selectedReport.severityScore}</span></div>
                 <div>People: <span className="text-white font-bold">{selectedReport.peopleScore}</span></div>
@@ -514,31 +554,31 @@ export default function CommandCenterPage() {
             </div>
 
             {/* Location & Department */}
-            <div className="grid grid-cols-2 gap-4 text-xs bg-navy-950/60 p-3 rounded-xl border border-navy-800/80 mb-4">
+            <div className="grid grid-cols-2 gap-4 text-xs bg-black/20 p-3.5 rounded-2xl border border-white/10 mb-4">
               <div>
-                <span className="text-slate-400 block">Department:</span>
-                <span className="font-semibold text-slate-200">{selectedReport.department?.name || 'Roads & Public Infra'}</span>
+                <span className="text-slate-400 block text-[10px]">Department:</span>
+                <span className="font-bold text-slate-200">{selectedReport.department?.name || 'Roads & Public Infra'}</span>
               </div>
               <div>
-                <span className="text-slate-400 block">Zone:</span>
-                <span className="font-semibold text-slate-200">{selectedReport.serviceZone?.name || 'Dhaka Zone'}</span>
+                <span className="text-slate-400 block text-[10px]">Zone:</span>
+                <span className="font-bold text-slate-200">{selectedReport.serviceZone?.name || 'Dhaka Zone'}</span>
               </div>
               <div className="col-span-2">
-                <span className="text-slate-400 block">Address:</span>
+                <span className="text-slate-400 block text-[10px]">Address:</span>
                 <span className="text-slate-200">{selectedReport.address} ({selectedReport.latitude?.toFixed(4)}, {selectedReport.longitude?.toFixed(4)})</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-navy-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
               <Link
                 href="/workflow"
-                className="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-700 text-xs font-semibold text-slate-300 transition-colors"
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors border border-white/10"
               >
                 Inspect Workflow Pipeline
               </Link>
               <button
                 onClick={() => setSelectedReport(null)}
-                className="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-navy-950 text-xs font-bold transition-colors"
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-navy-950 text-xs font-black transition-all hover:scale-105"
               >
                 Close Drawer
               </button>

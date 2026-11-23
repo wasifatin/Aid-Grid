@@ -14,9 +14,8 @@ import {
   GitBranch,
   BarChart3,
   FileText,
-  Settings,
-  HelpCircle,
   ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -52,7 +51,7 @@ export default function Sidebar() {
       name: t.nav.fieldOps,
       href: '/field-ops',
       icon: Truck,
-      badge: user?.role === 'FIELD_OFFICER' ? 'Assigned' : null,
+      badge: user?.role === 'FIELD_OFFICER' ? 'Active' : null,
     },
     {
       name: t.nav.decisionIntelligence,
@@ -81,12 +80,15 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 border-r border-navy-800 bg-navy-950 min-h-[calc(100vh-4rem)] flex flex-col justify-between p-4 hidden md:flex shrink-0">
-      <div className="space-y-6">
+    <aside className="w-64 p-3 pl-4 hidden md:flex flex-col justify-between shrink-0">
+      {/* Floating Liquid Glass Dock */}
+      <div className="glass-pane glass-rim p-4 rounded-3xl space-y-6">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">
-            Operations & Portals
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-2 flex items-center justify-between">
+            <span>Workspaces</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
           </div>
+
           <nav className="space-y-1">
             {navigation.map((item) => {
               const Icon = item.icon;
@@ -95,22 +97,23 @@ export default function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.55,1)] ${
                     isActive
-                      ? 'bg-gradient-to-r from-cyan-500/20 to-teal-500/10 text-cyan-400 border border-cyan-500/30 font-semibold'
-                      : 'text-slate-300 hover:bg-navy-850 hover:text-white'
+                      ? 'glass-lens text-white shadow-lg shadow-cyan-500/20 translate-x-1'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-1'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                    <span>{item.name}</span>
+                    <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-cyan-300' : 'text-slate-400'}`} />
+                    <span className="tracking-wide">{item.name}</span>
                   </div>
+
                   {item.badge && (
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
                         item.badge === 'A02' || item.badge === 'A07'
-                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                          : 'bg-navy-800 text-slate-300'
+                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm'
+                          : 'bg-white/10 text-slate-300'
                       }`}
                     >
                       {item.badge}
@@ -122,28 +125,33 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Open311 GeoReport API Link */}
-        <div className="pt-4 border-t border-navy-800">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">
+        {/* Open311 Interoperability Glass Pill */}
+        <div className="pt-3 border-t border-white/10">
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-2">
             Interoperability
           </div>
           <a
             href="/api/open311/v2/services"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-navy-850 hover:text-cyan-400 transition-colors"
+            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-cyan-300 hover:bg-white/5 transition-all"
           >
-            <span>Open311 GeoReport v2 API</span>
+            <span className="font-medium">Open311 v2 API</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </a>
         </div>
       </div>
 
-      {/* Track & Hackathon Footer Info */}
-      <div className="p-3 bg-navy-900/80 rounded-xl border border-navy-800 text-xs space-y-1">
-        <p className="font-bold text-slate-200">CODE-ARENAX 2026</p>
-        <p className="text-cyan-400 font-medium">World Problem Solver Track</p>
-        <p className="text-slate-400 text-[11px]">Declared: A02 & A07 Engine</p>
+      {/* Floating Bottom Card */}
+      <div className="glass-pane glass-rim p-3.5 rounded-2xl text-xs space-y-1 mt-4">
+        <div className="flex items-center justify-between">
+          <p className="font-black text-white tracking-wide">CODE-ARENAX</p>
+          <span className="text-[9px] font-bold text-teal-400 px-1.5 py-0.2 rounded-full bg-teal-400/10 border border-teal-400/30">
+            2026
+          </span>
+        </div>
+        <p className="text-cyan-400 font-semibold text-[11px]">World Problem Solver</p>
+        <p className="text-slate-400 text-[10px]">A02 & A07 Intelligent Systems</p>
       </div>
     </aside>
   );
