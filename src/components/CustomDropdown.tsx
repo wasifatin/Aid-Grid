@@ -87,10 +87,13 @@ export default function CustomDropdown({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
+        style={{
+          backgroundColor: isOpen ? 'rgba(14, 23, 42, 0.95)' : 'rgba(10, 16, 30, 0.92)',
+        }}
         className={`w-full px-4 py-2.5 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-3 text-xs font-semibold backdrop-blur-xl ${
           isOpen
-            ? 'bg-[#0b1324]/90 border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
-            : 'bg-[#090e1c]/80 border-cyan-500/25 text-slate-200 hover:border-cyan-400/50 hover:bg-[#0d1629]/90'
+            ? 'border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
+            : 'border-cyan-500/25 text-slate-200 hover:border-cyan-400/50 hover:bg-[#0d1629]/90'
         } ${buttonClassName}`}
       >
         <div className="flex items-center gap-2.5 truncate">
@@ -109,10 +112,20 @@ export default function CustomDropdown({
         />
       </button>
 
-      {/* Floating Animated Dropdown Menu (Glassy transparent, semi-opaque dark obsidian glass) */}
+      {/* Floating Animated Dropdown Menu (Glassy semi-opaque dark obsidian glass) */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 p-1.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_20px_rgba(0,209,255,0.12)] border border-cyan-500/35 bg-[#090e1d]/96 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-200 min-w-full">
-          <div className="space-y-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+        <div
+          className="glass-dropdown-menu absolute top-full left-0 right-0 mt-2 z-50 p-2 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-200 min-w-full overflow-hidden"
+          style={{
+            backgroundColor: '#0a101f',
+            backgroundImage: 'linear-gradient(180deg, rgba(16, 26, 48, 0.98) 0%, rgba(9, 15, 28, 0.99) 100%)',
+            border: '1px solid rgba(0, 209, 255, 0.35)',
+            boxShadow: '0 25px 60px -10px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 209, 255, 0.16)',
+            backdropFilter: 'blur(28px)',
+            WebkitBackdropFilter: 'blur(28px)',
+          }}
+        >
+          <div className="space-y-1 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
             {options.map((option) => {
               const isSelected = option.value === value;
               return (

@@ -24,7 +24,7 @@ export default function LiveMapPage() {
   return (
     <div className="space-y-6 perspective-container">
       {/* Top Banner */}
-      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-40">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/40 shadow-sm">
@@ -44,7 +44,7 @@ export default function LiveMapPage() {
         </div>
 
         {/* Zone Selector */}
-        <div className="flex items-center gap-2 min-w-[280px]">
+        <div className="flex items-center gap-2 w-full sm:w-80 relative z-40">
           <CustomDropdown
             options={PILOT_ZONES.map((z) => ({
               value: z.code,
