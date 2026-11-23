@@ -14,13 +14,12 @@ import {
   GitBranch,
   BarChart3,
   FileText,
-  ExternalLink,
-  Sparkles,
+  PhoneCall,
 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { t, user } = useApp();
+  const { t, user, loginAsJudgeRole, setShowEmergencyModal } = useApp();
 
   const navigation = [
     {
@@ -33,7 +32,7 @@ export default function Sidebar() {
       name: t.nav.citizenPortal,
       href: '/citizen',
       icon: FilePlus,
-      badge: 'Citizen',
+      badge: null, // Removed citizen word box per user instruction
     },
     {
       name: t.nav.reports,
@@ -57,13 +56,13 @@ export default function Sidebar() {
       name: t.nav.decisionIntelligence,
       href: '/decision',
       icon: Cpu,
-      badge: 'A02',
+      badge: null, // Removed A02 word box per user instruction
     },
     {
       name: t.nav.workflowCenter,
       href: '/workflow',
       icon: GitBranch,
-      badge: 'A07',
+      badge: null, // Removed A07 word box per user instruction
     },
     {
       name: t.nav.analytics,
@@ -82,7 +81,8 @@ export default function Sidebar() {
   return (
     <aside className="w-64 p-3 pl-4 hidden md:flex flex-col justify-between shrink-0">
       {/* Floating Liquid Glass Dock */}
-      <div className="glass-pane glass-rim p-4 rounded-3xl space-y-6">
+      <div className="glass-pane glass-rim p-3.5 rounded-3xl space-y-4">
+        {/* Workspaces Menu */}
         <div>
           <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-2 flex items-center justify-between">
             <span>Workspaces</span>
@@ -109,13 +109,7 @@ export default function Sidebar() {
                   </div>
 
                   {item.badge && (
-                    <span
-                      className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                        item.badge === 'A02' || item.badge === 'A07'
-                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm'
-                          : 'bg-white/10 text-slate-300'
-                      }`}
-                    >
+                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
                       {item.badge}
                     </span>
                   )}
@@ -125,33 +119,90 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Open311 Interoperability Glass Pill */}
-        <div className="pt-3 border-t border-white/10">
-          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-2">
-            Interoperability
-          </div>
-          <a
-            href="/api/open311/v2/services"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-cyan-300 hover:bg-white/5 transition-all"
-          >
-            <span className="font-medium">Open311 v2 API</span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-          </a>
-        </div>
-      </div>
+        {/* Evaluator Role & Pilot Switcher (Switched directly into the mini taskbar) */}
+        <div className="pt-3 border-t border-white/10 space-y-2.5">
+          {/* Header Row */}
+          <div className="flex items-center justify-between text-[11px]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+              <span className="font-bold text-white tracking-wide">AIDGRID</span>
+              <span className="text-[8px] font-black uppercase px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                PANE V2.6
+              </span>
+            </div>
 
-      {/* Floating Bottom Card */}
-      <div className="glass-pane glass-rim p-3.5 rounded-2xl text-xs space-y-1 mt-4">
-        <div className="flex items-center justify-between">
-          <p className="font-black text-white tracking-wide">CODE-ARENAX</p>
-          <span className="text-[9px] font-bold text-teal-400 px-1.5 py-0.2 rounded-full bg-teal-400/10 border border-teal-400/30">
-            2026
-          </span>
+            <button
+              onClick={() => setShowEmergencyModal(true)}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[10px] font-bold transition-colors"
+            >
+              <PhoneCall className="w-2.5 h-2.5 text-rose-400" />
+              <span>999</span>
+            </button>
+          </div>
+
+          {/* Active Role Pill */}
+          <div className="flex items-center justify-between text-[10px] px-2.5 py-1 rounded-xl bg-white/5 border border-white/10">
+            <span className="text-slate-400 font-medium">Active Role:</span>
+            <span className="font-black text-cyan-300 uppercase tracking-wider">
+              {user?.role.replace('_', ' ') || 'SYSTEM ADMIN'}
+            </span>
+          </div>
+
+          {/* Pilot Coverage Row */}
+          <div className="text-[10px] text-slate-400 flex items-center gap-1 leading-tight">
+            <MapPin className="w-3 h-3 text-cyan-400 shrink-0" />
+            <span>Pilot: <strong className="text-slate-200">Dhaka DNCC & DSCC (Zones 1-5)</strong></span>
+          </div>
+
+          {/* Switch Evaluator Role Section */}
+          <div className="space-y-1 pt-1">
+            <span className="text-[9px] font-black uppercase tracking-wider text-cyan-400 block">
+              SWITCH EVALUATOR ROLE:
+            </span>
+            <div className="grid grid-cols-2 gap-1 text-[10px]">
+              <button
+                onClick={() => loginAsJudgeRole('SYSTEM_ADMIN')}
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                  user?.role === 'SYSTEM_ADMIN'
+                    ? 'bg-purple-600/40 border-purple-400 text-purple-200 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                Admin
+              </button>
+              <button
+                onClick={() => loginAsJudgeRole('DEPARTMENT_MANAGER')}
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                  user?.role === 'DEPARTMENT_MANAGER'
+                    ? 'bg-blue-600/40 border-blue-400 text-blue-200 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                Manager
+              </button>
+              <button
+                onClick={() => loginAsJudgeRole('FIELD_OFFICER')}
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                  user?.role === 'FIELD_OFFICER'
+                    ? 'bg-amber-600/40 border-amber-400 text-amber-200 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                Field Lead
+              </button>
+              <button
+                onClick={() => loginAsJudgeRole('CITIZEN')}
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                  user?.role === 'CITIZEN'
+                    ? 'bg-teal-600/40 border-teal-400 text-teal-200 shadow-sm'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                Citizen
+              </button>
+            </div>
+          </div>
         </div>
-        <p className="text-cyan-400 font-semibold text-[11px]">World Problem Solver</p>
-        <p className="text-slate-400 text-[10px]">A02 & A07 Intelligent Systems</p>
       </div>
     </aside>
   );

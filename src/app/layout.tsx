@@ -3,7 +3,6 @@ import './globals.css';
 import { AppProvider } from '@/context/AppContext';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
-import DynamicIsland from '@/components/DynamicIsland';
 import EmergencyModal from '@/components/EmergencyModal';
 
 export const metadata: Metadata = {
@@ -27,9 +26,6 @@ export default function RootLayout({
         </div>
 
         <AppProvider>
-          {/* Dynamic Island Capsule */}
-          <DynamicIsland />
-
           {/* Top Glass Navigation */}
           <Header />
 
