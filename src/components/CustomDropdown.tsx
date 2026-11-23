@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, MapPin } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 
 export interface DropdownOption {
   value: string;
@@ -15,6 +15,7 @@ interface CustomDropdownProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  buttonClassName?: string;
   icon?: React.ReactNode;
 }
 
@@ -24,12 +25,36 @@ export default function CustomDropdown({
   onChange,
   placeholder = 'Select an option',
   className = '',
+  buttonClassName = '',
   icon,
 }: CustomDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedOption = options.find((opt) => opt.value === value);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  // Hover open/close handlers with slight debounce for smooth mouse navigation
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 180);
+  };
 
   // Close on outside click
   useEffect(() => {
@@ -52,22 +77,27 @@ export default function CustomDropdown({
   }, []);
 
   return (
-    <div ref={dropdownRef} className={`relative w-full text-left ${className}`}>
+    <div
+      ref={dropdownRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`relative w-full text-left ${className}`}
+    >
       {/* Trigger Button */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-4 py-3 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-3 text-xs font-semibold backdrop-blur-xl ${
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`w-full px-4 py-2.5 rounded-2xl border transition-all duration-300 flex items-center justify-between gap-3 text-xs font-semibold backdrop-blur-xl ${
           isOpen
-            ? 'bg-black/50 border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
-            : 'bg-black/30 border-white/10 text-slate-200 hover:border-cyan-500/40 hover:bg-black/40'
-        }`}
+            ? 'bg-[#0b1324]/90 border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
+            : 'bg-[#090e1c]/80 border-cyan-500/25 text-slate-200 hover:border-cyan-400/50 hover:bg-[#0d1629]/90'
+        } ${buttonClassName}`}
       >
         <div className="flex items-center gap-2.5 truncate">
           {icon ? (
             <span className="text-cyan-400 shrink-0">{icon}</span>
           ) : (
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400/80 shadow-[0_0_8px_#00d1ff] shrink-0"></span>
           )}
           <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         </div>
@@ -79,10 +109,10 @@ export default function CustomDropdown({
         />
       </button>
 
-      {/* Floating Animated Dropdown Menu (quick-panther-98 hover style) */}
+      {/* Floating Animated Dropdown Menu (Glassy transparent, semi-opaque dark obsidian glass) */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 glass-pane-chrome glass-rim p-1.5 rounded-2xl shadow-2xl border border-cyan-500/40 bg-slate-950/95 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 p-1.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_20px_rgba(0,209,255,0.12)] border border-cyan-500/35 bg-[#090e1d]/96 backdrop-blur-2xl animate-in fade-in slide-in-from-top-2 duration-200 min-w-full">
+          <div className="space-y-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
             {options.map((option) => {
               const isSelected = option.value === value;
               return (
@@ -93,22 +123,24 @@ export default function CustomDropdown({
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`group relative w-full px-3.5 py-2.5 rounded-xl text-left text-xs font-bold transition-all duration-200 flex items-center justify-between gap-2 ${
+                  className={`group relative w-full px-3.5 py-2.5 rounded-xl text-left text-xs font-bold transition-all duration-200 flex items-center justify-between gap-2.5 ${
                     isSelected
                       ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm'
-                      : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-1.5 hover:border-cyan-500/30'
+                      : 'text-slate-300 hover:text-white hover:bg-cyan-500/15 hover:border hover:border-cyan-400/30 hover:translate-x-1.5'
                   }`}
                 >
-                  <div className="flex items-center gap-2 truncate">
+                  <div className="flex items-center gap-2.5 truncate">
                     <span
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                        isSelected ? 'bg-cyan-400 shadow-sm shadow-cyan-400/80' : 'bg-slate-500 group-hover:bg-cyan-400'
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-cyan-400 shadow-[0_0_8px_#00d1ff]'
+                          : 'bg-slate-500 group-hover:bg-cyan-400 group-hover:shadow-[0_0_6px_#00d1ff]'
                       }`}
                     />
                     <div className="truncate">
                       <p className="truncate leading-tight">{option.label}</p>
                       {option.sublabel && (
-                        <span className="text-[10px] text-slate-400 font-normal block truncate">
+                        <span className="text-[10px] text-slate-400 font-normal block truncate mt-0.5">
                           {option.sublabel}
                         </span>
                       )}

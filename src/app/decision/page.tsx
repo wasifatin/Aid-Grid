@@ -20,6 +20,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { PILOT_ZONES, CATEGORIES_LIST } from '@/lib/constants';
+import CustomDropdown from '@/components/CustomDropdown';
 
 export default function DecisionIntelligencePage() {
   const { t, lang, showToast } = useApp();
@@ -489,32 +490,27 @@ export default function DecisionIntelligencePage() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <label className="block text-slate-400 mb-1 font-bold">Incident Category</label>
-              <select
+              <CustomDropdown
+                options={CATEGORIES_LIST.map((c) => ({
+                  value: c.code,
+                  label: c.name,
+                }))}
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-2xl text-slate-200"
-              >
-                {CATEGORIES_LIST.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedCategory}
+              />
             </div>
 
             <div>
               <label className="block text-slate-400 mb-1 font-bold">Jurisdiction Zone</label>
-              <select
+              <CustomDropdown
+                options={PILOT_ZONES.map((z) => ({
+                  value: z.code,
+                  label: z.name,
+                  sublabel: z.code,
+                }))}
                 value={selectedZoneId}
-                onChange={(e) => setSelectedZoneId(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-2xl text-slate-200"
-              >
-                {PILOT_ZONES.map((z) => (
-                  <option key={z.code} value={z.code}>
-                    {z.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedZoneId}
+              />
             </div>
           </div>
 

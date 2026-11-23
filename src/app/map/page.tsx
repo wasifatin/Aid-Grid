@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { MapPin, Filter, Layers, AlertCircle, RefreshCw, Eye, Sparkles } from 'lucide-react';
 import { PILOT_ZONES } from '@/lib/constants';
+import CustomDropdown from '@/components/CustomDropdown';
 
 export default function LiveMapPage() {
   const { t, lang } = useApp();
@@ -43,21 +44,20 @@ export default function LiveMapPage() {
         </div>
 
         {/* Zone Selector */}
-        <div className="flex items-center gap-2">
-          <select
+        <div className="flex items-center gap-2 min-w-[280px]">
+          <CustomDropdown
+            options={PILOT_ZONES.map((z) => ({
+              value: z.code,
+              label: lang === 'bn' ? z.nameBn : z.name,
+              sublabel: `${z.code} • Pilot Zone`,
+            }))}
             value={selectedZone.code}
-            onChange={(e) => {
-              const z = PILOT_ZONES.find((x) => x.code === e.target.value);
+            onChange={(val) => {
+              const z = PILOT_ZONES.find((x) => x.code === val);
               if (z) setSelectedZone(z);
             }}
-            className="px-4 py-2.5 rounded-2xl bg-black/40 border border-white/10 text-xs font-bold text-slate-200 shadow-sm"
-          >
-            {PILOT_ZONES.map((z) => (
-              <option key={z.code} value={z.code}>
-                {lang === 'bn' ? z.nameBn : z.name}
-              </option>
-            ))}
-          </select>
+            icon={<MapPin className="w-3.5 h-3.5 text-cyan-400" />}
+          />
         </div>
       </div>
 
