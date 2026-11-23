@@ -1,0 +1,407 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Profile {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  passwordHash    String
+  fullName        String
+  phone           String?
+  nidOrCitizenId  String?
+  role            String         @default("CITIZEN") // CITIZEN, FIELD_OFFICER, DEPARTMENT_MANAGER, SYSTEM_ADMIN
+  preferredLang   String         @default("en") // "en" or "bn"
+  avatarUrl       String?
+  departmentId    String?
+  teamId          String?
+  serviceZoneId   String?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  department      Department?    @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  team            Team?          @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  serviceZone     ServiceZone?   @relation(fields: [serviceZoneId], references: [id], onDelete: SetNull)
+  
+  reportsSubmitted Report[]      @relation("CitizenReports")
+  assignments      Assignment[]  @relation("OfficerAssignments")
+  statusChanges    StatusHistory[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+
+  @@index([role])
+  @@index([departmentId])
+  @@index([teamId])
+}
+
+model Department {
+  id           String          @id @default(cuid())
+  name         String          @unique
+  nameBn       String
+  code         String          @unique // e.g. RHD, WASA, WASTE, ELEC, PARKS
+  description  String
+  contactEmail String
+  contactPhone String
+  headName     String?
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  profiles     Profile[]
+  teams        Team[]
+  categories   IssueCategory[]
+  reports      Report[]
+}
+
+model ServiceZone {
+  id              String      @id @default(cuid())
+  name            String      @unique // e.g. Zone 1 (Mirpur), Zone 2 (Gulshan/Banani)
+  nameBn          String
+  code            String      @unique
+  cityCorporation String      @default("Dhaka North City Corporation (DNCC)")
+  centerLat       Float
+  centerLng       Float
+  radiusKm        Float       @default(5.0)
+  boundaryGeoJson String?     // polygon geojson for zone mapping
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  teams           Team[]
+  reports         Report[]
+  profiles        Profile[]
+}
+
+model IssueCategory {
+  id                  String       @id @default(cuid())
+  name                String       @unique
+  nameBn              String
+  code                String       @unique // ROADS, DRAINAGE, WASTE, LIGHTS, WATER, SIDEWALKS, TREES, GENERAL
+  description         String
+  icon                String       @default("alert-circle")
+  defaultDepartmentId String
+  defaultSeverity     Int          @default(50) // 0-100
+  baseSlaHours        Int          @default(48)
+  isActive            Boolean      @default(true)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  department          Department   @relation(fields: [defaultDepartmentId], references: [id], onDelete: Restrict)
+  reports             Report[]
+  slaPolicies         SlaPolicy[]
+
+  @@index([defaultDepartmentId])
+}
+
+model Team {
+  id              String          @id @default(cuid())
+  name            String
+  code            String          @unique
+  departmentId    String
+  serviceZoneId   String
+  contactPhone    String
+  capacity        Int             @default(5)
+  activeWorkload  Int             @default(0)
+  status          String          @default("ON_DUTY") // ON_DUTY, DISPATCHED, STANDBY, OFF_DUTY
+  currentLat      Float?
+  currentLng      Float?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  department      Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  serviceZone     ServiceZone     @relation(fields: [serviceZoneId], references: [id], onDelete: Restrict)
+  members         Profile[]
+  skills          TeamSkill[]
+  assignments     Assignment[]
+
+  @@index([departmentId])
+  @@index([serviceZoneId])
+}
+
+model TeamSkill {
+  id                 String   @id @default(cuid())
+  teamId             String
+  skillCode          String   // ASPHALT_REPAIR, HEAVY_DRAINAGE_EXCAVATION, HIGH_VOLTAGE_ELEC, BIOHAZARD_WASTE, TREE_FELLING, WATER_MAIN_VALVE
+  skillName          String
+  certificationLevel String   @default("STANDARD") // BASIC, STANDARD, ADVANCED, CERTIFIED_SPECIALIST
+  verified           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  team               Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, skillCode])
+  @@index([skillCode])
+}
+
+model SlaPolicy {
+  id                   String        @id @default(cuid())
+  issueCategoryId      String
+  priority             String        // CRITICAL, HIGH, MEDIUM, LOW
+  maxAckHours          Int           // e.g. 2, 4, 12, 24
+  maxResolutionHours   Int           // e.g. 12, 24, 72, 120
+  escalationTargetRole String        @default("DEPARTMENT_MANAGER")
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  category             IssueCategory @relation(fields: [issueCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([issueCategoryId, priority])
+}
+
+model Report {
+  id                    String              @id @default(cuid())
+  referenceNumber       String              @unique // AID-2026-XXXXX
+  title                 String
+  description           String
+  categoryId            String
+  departmentId          String?
+  serviceZoneId         String?
+  citizenId             String
+  latitude              Float
+  longitude             Float
+  address               String
+  status                String              @default("SUBMITTED") 
+  // Lifecycle: SUBMITTED -> VALIDATING -> TRIAGED -> ASSIGNED -> ACKNOWLEDGED -> IN_PROGRESS -> NEEDS_INFORMATION -> RESOLVED -> CITIZEN_REVIEW -> CLOSED, REOPENED, ESCALATED, REJECTED
+  
+  priority              String              @default("MEDIUM") // CRITICAL, HIGH, MEDIUM, LOW
+  priorityScore         Float               @default(50.0) // 0-100
+  
+  // A02 explainable priority factor normalized scores (0-100)
+  safetyScore           Float               @default(50.0)
+  severityScore         Float               @default(50.0)
+  peopleScore           Float               @default(50.0)
+  locationScore         Float               @default(50.0)
+  slaScore              Float               @default(0.0)
+  corroborationScore    Float               @default(0.0)
+  corroborationCount    Int                 @default(1)
+  
+  isEmergencyNoticeShown Boolean            @default(false)
+  duplicateOfId         String?
+  
+  // Resolution details
+  resolutionSummary     String?
+  resolutionEvidenceUrl String?
+  resolvedAt            DateTime?
+  
+  // Citizen verification
+  citizenVerified       Boolean?
+  citizenFeedbackRating Int?                // 1-5
+  citizenFeedbackComment String?
+  citizenConfirmedAt    DateTime?
+  reopenReason          String?
+  reopenedAt            DateTime?
+
+  // SLA timing
+  ackDeadline           DateTime?
+  resolutionDeadline    DateTime?
+  acknowledgedAt        DateTime?
+  closedAt              DateTime?
+  escalatedAt           DateTime?
+  escalationReason      String?
+
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  category              IssueCategory       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  department            Department?         @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  serviceZone           ServiceZone?        @relation(fields: [serviceZoneId], references: [id], onDelete: SetNull)
+  citizen               Profile             @relation("CitizenReports", fields: [citizenId], references: [id], onDelete: Cascade)
+  duplicateOf           Report?             @relation("Duplicates", fields: [duplicateOfId], references: [id], onDelete: SetNull)
+  duplicates            Report[]            @relation("Duplicates")
+
+  attachments           ReportAttachment[]
+  assignments           Assignment[]
+  statusHistory         StatusHistory[]
+  workflowRuns          WorkflowRun[]
+  decisionExplanations  DecisionExplanation[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([categoryId])
+  @@index([departmentId])
+  @@index([serviceZoneId])
+  @@index([citizenId])
+  @@index([createdAt])
+}
+
+model ReportAttachment {
+  id                   String   @id @default(cuid())
+  reportId             String
+  fileUrl              String
+  fileName             String
+  fileType             String   // image/jpeg, image/png, etc.
+  fileSize             Int
+  isResolutionEvidence Boolean  @default(false)
+  uploadedBy           String   // userId
+  createdAt            DateTime @default(now())
+
+  report               Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}
+
+model Assignment {
+  id               String    @id @default(cuid())
+  reportId         String
+  teamId           String
+  officerId        String?
+  status           String    @default("PENDING_ACK") // PENDING_ACK, ACKNOWLEDGED, IN_PROGRESS, COMPLETED, REJECTED
+  assignmentCost   Float     @default(0.0)
+  distanceKm       Float     @default(0.0)
+  notes            String?
+  rejectionReason  String?
+  assignedAt       DateTime  @default(now())
+  acknowledgedAt   DateTime?
+  startedAt        DateTime?
+  completedAt      DateTime?
+
+  report           Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  team             Team      @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  officer          Profile?  @relation("OfficerAssignments", fields: [officerId], references: [id], onDelete: SetNull)
+
+  @@index([reportId])
+  @@index([teamId])
+  @@index([officerId])
+}
+
+model StatusHistory {
+  id             String    @id @default(cuid())
+  reportId       String
+  previousStatus String
+  newStatus      String
+  changedById    String?
+  changeReason   String?
+  metadataJson   String?   // JSON payload of relevant data at state transition
+  createdAt      DateTime  @default(now())
+
+  report         Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  changedBy      Profile?  @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([reportId])
+}
+
+model WorkflowRun {
+  id                 String         @id @default(cuid())
+  reportId           String
+  runNumber          Int            @default(1)
+  status             String         @default("PENDING") // PENDING, PROCESSING, COMPLETED, RETRY_PENDING, FAILED, REQUIRES_MANUAL_REVIEW
+  currentStep        Int            @default(1)
+  lastSuccessfulStep Int            @default(0)
+  maxRetries         Int            @default(3)
+  retryCount         Int            @default(0)
+  nextRetryAt        DateTime?
+  errorMessage       String?
+  idempotencyKey     String         @unique
+  failureInjected    Boolean        @default(false)
+  injectFailAtStep   Int?           // Step to purposefully fail for judge demonstration
+  startedAt          DateTime       @default(now())
+  completedAt        DateTime?
+  updatedAt          DateTime       @updatedAt
+
+  report             Report         @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  steps              WorkflowStep[]
+
+  @@index([reportId])
+  @@index([status])
+}
+
+model WorkflowStep {
+  id                  String      @id @default(cuid())
+  workflowRunId       String
+  stepNumber          Int
+  stepName            String      // e.g. REPORT_CREATED, VALIDATION, DUPLICATE_DETECTION, TRIAGE, TEAM_EVALUATION, ASSIGNMENT, NOTIFICATION, SLA_MONITORING
+  status              String      @default("PENDING") // PENDING, EXECUTING, COMPLETED, FAILED, SKIPPED
+  attemptCount        Int         @default(0)
+  inputPayloadJson    String?
+  outputPayloadJson   String?
+  errorDetailsJson    String?
+  executionDurationMs Int         @default(0)
+  executedAt          DateTime?
+
+  workflowRun         WorkflowRun @relation(fields: [workflowRunId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowRunId, stepNumber])
+  @@index([workflowRunId])
+}
+
+model DecisionExplanation {
+  id                      String   @id @default(cuid())
+  reportId                String
+  factorSafety            Float
+  factorSeverity          Float
+  factorPeople            Float
+  factorLocation          Float
+  factorSla               Float
+  factorCorroboration     Float
+  totalScore              Float
+  priorityBand            String   // CRITICAL, HIGH, MEDIUM, LOW
+  weightsJson             String   // e.g. {"safety": 0.3, "severity": 0.25, ...}
+  rulesAppliedJson        String   // List of specific business rules matched
+  narrativeExplanation    String
+  recommendedTeamId       String?
+  alternativeTeamsJson    String?
+  infeasibilityReason     String?
+  isSupervisorReviewReq   Boolean  @default(false)
+  decisionVersion         String   @default("v1.0.0")
+  createdAt               DateTime @default(now())
+
+  report                  Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}
+
+model PriorityConfig {
+  id                    String   @id @default("default-config")
+  safetyWeight          Float    @default(0.30)
+  severityWeight        Float    @default(0.25)
+  peopleWeight          Float    @default(0.15)
+  locationWeight        Float    @default(0.15)
+  slaWeight             Float    @default(0.10)
+  corroborationWeight   Float    @default(0.05)
+  criticalThreshold     Float    @default(80.0)
+  highThreshold         Float    @default(60.0)
+  mediumThreshold       Float    @default(35.0)
+  isActive              Boolean  @default(true)
+  updatedAt             DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  titleBn   String?
+  message   String
+  messageBn String?
+  type      String   // STATUS_CHANGE, ASSIGNMENT, SLA_WARNING, ESCALATION, CITIZEN_ACTION, SYSTEM
+  linkUrl   String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String   // REPORT_SUBMIT, TRIAGE_RUN, ASSIGNMENT_MADE, STATUS_CHANGED, RETRY_ATTEMPT, WORKFLOW_INJECT_FAIL, CONFIG_UPDATE
+  entityType  String   // REPORT, ASSIGNMENT, WORKFLOW, USER, CONFIG
+  entityId    String
+  oldValues   String?  // JSON
+  newValues   String?  // JSON
+  ipAddress   String?  @default("127.0.0.1")
+  userAgent   String?  @default("AidGrid Client")
+  createdAt   DateTime @default(now())
+
+  user        Profile? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
