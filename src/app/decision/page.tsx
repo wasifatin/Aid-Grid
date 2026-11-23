@@ -231,32 +231,32 @@ export default function DecisionIntelligencePage() {
 
       {/* A02 Judge Demonstration Presets Bar (Glass Capsule Bar) */}
       <div className="glass-pane glass-rim p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-3 shadow-lg">
-        <div className="flex items-center gap-2 text-xs font-black uppercase text-amber-300">
-          <Play className="w-4 h-4 text-amber-400" />
+        <div className="flex items-center gap-2 text-xs font-black uppercase text-cyan-300">
+          <Play className="w-4 h-4 text-cyan-400" />
           <span>Judge Test Scenarios (1-Click Presets):</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => applyTestScenario(1)}
-            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
+            className="px-3.5 py-1.5 rounded-xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all"
           >
             1. High-Hazard Sinkhole
           </button>
           <button
             onClick={() => applyTestScenario(2)}
-            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
+            className="px-3.5 py-1.5 rounded-xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all"
           >
             2. Low-Severity Bench
           </button>
           <button
             onClick={() => applyTestScenario(3)}
-            className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-xs font-bold text-rose-300 transition-all hover:scale-105"
+            className="px-3.5 py-1.5 rounded-xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all"
           >
             3. Uncertified Skill Conflict
           </button>
           <button
             onClick={() => applyTestScenario(4)}
-            className="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all hover:scale-105"
+            className="px-3.5 py-1.5 rounded-xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all"
           >
             4. Capacity Saturation
           </button>

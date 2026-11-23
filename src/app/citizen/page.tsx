@@ -227,10 +227,10 @@ export default function CitizenPortalPage() {
                     key={cat.code}
                     type="button"
                     onClick={() => setCategoryId(cat.code)}
-                    className={`p-3 rounded-2xl border text-left transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.55,1)] ${
+                    className={`p-3 rounded-2xl border text-left jellyfish-interactive transition-all ${
                       categoryId === cat.code
-                        ? 'bg-gradient-to-br from-cyan-500/20 to-teal-500/10 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/20 scale-[1.02]'
-                        : 'bg-black/20 border-white/5 text-slate-400 hover:border-white/15 hover:bg-white/5'
+                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/20 scale-[1.02]'
+                        : 'bg-black/20 border-white/10 text-slate-400 hover:border-cyan-500/40 hover:text-slate-200'
                     }`}
                   >
                     <p className="text-xs font-bold leading-tight truncate">
@@ -396,7 +396,7 @@ export default function CitizenPortalPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"
+              className="w-full py-3.5 rounded-2xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <span>{t.reportForm.submitting}</span>

@@ -82,7 +82,7 @@ export default function CommandCenterPage() {
     TRIAGED: 'bg-cyan-950/60 text-cyan-300 border-cyan-700/60',
     ASSIGNED: 'bg-blue-950/60 text-blue-300 border-blue-700/60',
     ACKNOWLEDGED: 'bg-sky-950/60 text-sky-300 border-sky-700/60',
-    IN_PROGRESS: 'bg-amber-950/60 text-amber-300 border-amber-700/60',
+    IN_PROGRESS: 'bg-sky-950/60 text-sky-300 border-sky-700/60',
     NEEDS_INFORMATION: 'bg-purple-950/60 text-purple-300 border-purple-700/60',
     RESOLVED: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/60',
     CITIZEN_REVIEW: 'bg-teal-950/60 text-teal-300 border-teal-700/60',
@@ -117,14 +117,14 @@ export default function CommandCenterPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => fetchData()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
           <Link
             href="/citizen"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-400 to-cyan-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/25 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20"
           >
             <span>+ Report Issue</span>
           </Link>
@@ -172,14 +172,14 @@ export default function CommandCenterPage() {
         {/* Card 3: In Progress & Field Dispatch */}
         <PerspectiveCard className="p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+            <span className="text-xs font-bold uppercase tracking-wider text-sky-300">
               {t.dashboard.inProgress}
             </span>
-            <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30">
-              <TrendingUp className="w-4 h-4 text-amber-400" />
+            <div className="p-2 rounded-xl bg-sky-500/15 border border-sky-500/30">
+              <TrendingUp className="w-4 h-4 text-sky-400" />
             </div>
           </div>
-          <div className="text-3xl font-black text-amber-400 tracking-tight">
+          <div className="text-3xl font-black text-sky-400 tracking-tight">
             {analytics?.summary?.inProgress ?? '—'}
           </div>
           <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5 pt-2 border-t border-white/5">
@@ -225,27 +225,39 @@ export default function CommandCenterPage() {
           <div className="h-64 w-full">
             {analytics?.categoryDistribution?.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={analytics.categoryDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
-                  <XAxis
-                    dataKey="name"
-                    stroke="#94a3b8"
-                    fontSize={10}
-                    tickLine={false}
-                    interval={0}
-                    angle={-20}
-                    textAnchor="end"
-                  />
+                <BarChart data={analytics.categoryDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+                  <XAxis hide={true} />
                   <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(16px)',
-                      borderRadius: '1rem',
-                      fontSize: '12px',
-                      color: '#f8fafc',
+                    cursor={false}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const item = payload[0].payload;
+                        const count = Number(payload[0].value) || 0;
+                        const total = analytics?.categoryDistribution?.reduce((acc: number, c: any) => acc + (Number(c.count) || 0), 0) || 1;
+                        const rate = ((count / total) * 100).toFixed(1);
+
+                        return (
+                          <div className="glass-pane glass-rim p-3.5 rounded-2xl shadow-2xl border border-cyan-500/40 bg-slate-950/95 backdrop-blur-xl text-left pointer-events-none z-50">
+                            <div className="text-[10px] font-black uppercase tracking-wider text-cyan-400 mb-1">
+                              Sector / Category
+                            </div>
+                            <div className="text-xs font-bold text-white mb-2 max-w-[210px] leading-snug">
+                              {item.name}
+                            </div>
+                            <div className="flex items-center justify-between gap-4 pt-1.5 border-t border-white/10 text-xs">
+                              <span className="text-slate-400">Total Volume:</span>
+                              <span className="font-mono font-bold text-cyan-300">{count} issues</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-4 text-xs mt-1">
+                              <span className="text-slate-400">Sector Rate:</span>
+                              <span className="font-mono font-bold text-emerald-400">{rate}% of total</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
-                    itemStyle={{ color: '#00d1ff' }}
                   />
                   <Bar dataKey="count" fill="url(#cyanTealGrad)" radius={[6, 6, 0, 0]} />
                   <defs>

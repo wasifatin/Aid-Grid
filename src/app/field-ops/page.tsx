@@ -141,7 +141,7 @@ export default function FieldOperationsPage() {
       <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 shadow-sm">
               Module C Workspace
             </span>
             <span className="text-xs text-slate-400 font-medium">
@@ -184,9 +184,9 @@ export default function FieldOperationsPage() {
                     <span
                       className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-sm ${
                         asgn.status === 'PENDING_ACK'
-                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/40 animate-pulse'
-                          : asgn.status === 'IN_PROGRESS'
                           ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40'
+                          : asgn.status === 'IN_PROGRESS'
+                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/40'
                           : asgn.status === 'COMPLETED'
                           ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
                           : 'bg-white/5 text-slate-300 border-white/10'
@@ -222,7 +222,7 @@ export default function FieldOperationsPage() {
                     <button
                       onClick={() => handleAcknowledge(asgn.id)}
                       disabled={processingAction}
-                      className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02]"
+                      className="w-full py-2.5 rounded-xl btn-jellyfish text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-1.5"
                     >
                       <Clock className="w-3.5 h-3.5" />
                       <span>{t.fieldOps.ackAction}</span>
@@ -233,7 +233,7 @@ export default function FieldOperationsPage() {
                     <button
                       onClick={() => handleStartWork(asgn.id)}
                       disabled={processingAction}
-                      className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02]"
+                      className="w-full py-2.5 rounded-xl btn-jellyfish text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-1.5"
                     >
                       <Play className="w-3.5 h-3.5" />
                       <span>{t.fieldOps.startWork}</span>
@@ -246,7 +246,7 @@ export default function FieldOperationsPage() {
                         setResolvingAssignment(asgn);
                         setResolutionSummary('');
                       }}
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02]"
+                      className="w-full py-2.5 rounded-xl btn-jellyfish text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-1.5"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{t.fieldOps.submitResolution}</span>
@@ -254,7 +254,7 @@ export default function FieldOperationsPage() {
                   )}
 
                   {asgn.status === 'COMPLETED' && (
-                    <div className="w-full py-2 text-center text-xs text-emerald-300 font-bold bg-emerald-500/10 rounded-xl border border-emerald-500/25">
+                    <div className="w-full py-2 text-center text-xs text-cyan-300 font-bold bg-cyan-500/10 rounded-xl border border-cyan-500/25">
                       ✓ Resolution Submitted
                     </div>
                   )}
@@ -340,7 +340,7 @@ export default function FieldOperationsPage() {
             <button
               onClick={handleSubmitResolution}
               disabled={processingAction}
-              className="w-full mt-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:scale-[1.01]"
+              className="w-full mt-6 py-3 rounded-2xl btn-jellyfish text-xs font-black uppercase tracking-wider shadow-lg flex items-center justify-center gap-2"
             >
               {t.fieldOps.completeBtn}
             </button>

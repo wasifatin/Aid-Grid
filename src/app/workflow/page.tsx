@@ -125,7 +125,7 @@ export default function WorkflowCenterPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={fetchWorkflowRuns}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl jellyfish-interactive bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 transition-all shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -133,7 +133,7 @@ export default function WorkflowCenterPage() {
           <button
             onClick={handleTriggerSlaHeartbeat}
             disabled={runningHeartbeat}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-rose-500/25 transition-all hover:scale-105"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20"
           >
             <Activity className="w-3.5 h-3.5" />
             <span>{t.workflow.runSlaCheck}</span>
@@ -160,7 +160,7 @@ export default function WorkflowCenterPage() {
           <button
             onClick={() => handleResumeRun(selectedRun.id)}
             disabled={recovering}
-            className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-400 via-cyan-400 to-teal-400 hover:opacity-95 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-500/30 flex items-center gap-2 transition-transform hover:scale-105 shrink-0"
+            className="px-6 py-3 rounded-2xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/25 flex items-center gap-2 shrink-0"
           >
             <RotateCcw className={`w-4 h-4 ${recovering ? 'animate-spin' : ''}`} />
             <span>{t.workflow.triggerRecoveryBtn}</span>

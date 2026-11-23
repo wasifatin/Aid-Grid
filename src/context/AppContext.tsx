@@ -22,9 +22,14 @@ interface AppContextType {
   lang: Language;
   t: typeof translations['en'];
   setLanguage: (lang: Language) => void;
-  loginAsJudgeRole: (role: 'CITIZEN' | 'FIELD_OFFICER' | 'DEPARTMENT_MANAGER' | 'SYSTEM_ADMIN') => Promise<void>;
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+  loginAsJudgeRole: (role: 'CITIZEN' | 'FIELD_OFFICER' | 'DEPARTMENT_MANAGER' | 'SYSTEM_ADMIN') => Promise<any>;
+  loginWithCredentials: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   setUser: (user: UserSession | null) => void;
+  isSignInModalOpen: boolean;
+  setIsSignInModalOpen: (open: boolean) => void;
   showEmergencyModal: boolean;
   setShowEmergencyModal: (show: boolean) => void;
   toastMessage: string | null;
@@ -36,12 +41,23 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserSession | null>(null);
   const [lang, setLang] = useState<Language>('en');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const t = translations[lang];
 
   useEffect(() => {
+    // Theme initialization
+    const savedTheme = localStorage.getItem('aidgrid_theme') as 'dark' | 'light' | null;
+    if (savedTheme === 'light') {
+      setTheme('light');
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+
     // Check initial session
     fetch('/api/auth/me')
       .then((res) => res.json())
@@ -61,6 +77,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         loginAsJudgeRole('SYSTEM_ADMIN');
       });
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('aidgrid_theme', nextTheme);
+    if (nextTheme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+    showToast(`Switched to ${nextTheme === 'light' ? 'Light (High Contrast)' : 'Dark (Liquid Glass)'} mode.`);
+  };
 
   const setLanguage = (newLang: Language) => {
     setLang(newLang);
@@ -82,10 +110,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       if (data.user) {
         setUser(data.user);
-        showToast(`Switched active session to: ${t.roles[role]} (${data.user.fullName})`);
+        showToast(`Authenticated as: ${t.roles[role]} (${data.user.fullName})`);
+        return { success: true };
       }
-    } catch (e) {
+      return { success: false, error: data.error };
+    } catch (e: any) {
       console.error(e);
+      return { success: false, error: e.message || 'Login failed' };
+    }
+  };
+
+  const loginWithCredentials = async (email: string, password: string) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setUser(data.user);
+        showToast(`Signed in successfully as ${data.user.fullName}!`);
+        return { success: true };
+      }
+      return { success: false, error: data.error || 'Invalid credentials' };
+    } catch (e: any) {
+      console.error(e);
+      return { success: false, error: e.message || 'Network error during sign-in' };
     }
   };
 
@@ -102,9 +153,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         lang,
         t,
         setLanguage,
+        theme,
+        toggleTheme,
         loginAsJudgeRole,
+        loginWithCredentials,
         logout,
         setUser,
+        isSignInModalOpen,
+        setIsSignInModalOpen,
         showEmergencyModal,
         setShowEmergencyModal,
         toastMessage,

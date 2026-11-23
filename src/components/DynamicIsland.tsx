@@ -87,10 +87,10 @@ export default function DynamicIsland() {
                     loginAsJudgeRole('SYSTEM_ADMIN');
                     setExpanded(false);
                   }}
-                  className={`py-1 rounded-lg font-bold border transition-all ${
+                  className={`py-1 rounded-lg font-bold border transition-all jellyfish-interactive ${
                     user?.role === 'SYSTEM_ADMIN'
-                      ? 'bg-purple-600/30 border-purple-500 text-purple-300'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                   }`}
                 >
                   Admin
@@ -100,10 +100,10 @@ export default function DynamicIsland() {
                     loginAsJudgeRole('DEPARTMENT_MANAGER');
                     setExpanded(false);
                   }}
-                  className={`py-1 rounded-lg font-bold border transition-all ${
+                  className={`py-1 rounded-lg font-bold border transition-all jellyfish-interactive ${
                     user?.role === 'DEPARTMENT_MANAGER'
-                      ? 'bg-blue-600/30 border-blue-500 text-blue-300'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                   }`}
                 >
                   Manager
@@ -113,10 +113,10 @@ export default function DynamicIsland() {
                     loginAsJudgeRole('FIELD_OFFICER');
                     setExpanded(false);
                   }}
-                  className={`py-1 rounded-lg font-bold border transition-all ${
+                  className={`py-1 rounded-lg font-bold border transition-all jellyfish-interactive ${
                     user?.role === 'FIELD_OFFICER'
-                      ? 'bg-amber-600/30 border-amber-500 text-amber-300'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                   }`}
                 >
                   Field Lead
@@ -126,10 +126,10 @@ export default function DynamicIsland() {
                     loginAsJudgeRole('CITIZEN');
                     setExpanded(false);
                   }}
-                  className={`py-1 rounded-lg font-bold border transition-all ${
+                  className={`py-1 rounded-lg font-bold border transition-all jellyfish-interactive ${
                     user?.role === 'CITIZEN'
-                      ? 'bg-teal-600/30 border-teal-500 text-teal-300'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                   }`}
                 >
                   Citizen

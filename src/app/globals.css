@@ -60,6 +60,82 @@
                0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Light Mode Overrides for High Contrast & Text Legibility */
+html.light, body.light {
+  --bg: #f8fafc;
+  --text: #0f172a;
+  --text-2: #334155;
+  --text-3: #64748b;
+  
+  --glass: rgba(255, 255, 255, 0.88);
+  --glass-thick: rgba(255, 255, 255, 0.96);
+  --glass-chrome: rgba(248, 250, 252, 0.94);
+  --glass-border: rgba(15, 23, 42, 0.12);
+  
+  --sheen: rgba(0, 0, 0, 0.04);
+  --glint: rgba(0, 0, 0, 0.06);
+  --rim-hi: rgba(0, 0, 0, 0.2);
+  --rim-mid: rgba(0, 0, 0, 0.1);
+  --rim-lo: rgba(0, 0, 0, 0.04);
+  
+  --depth: inset 0 1px 1px rgba(255, 255, 255, 0.9),
+           inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-lift: 0 12px 28px -6px rgba(15, 23, 42, 0.12), 0 0 20px -5px rgba(0, 180, 216, 0.2);
+}
+
+html.light .wall-ambient {
+  background: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f8fafc 70%) !important;
+}
+
+html.light .wall-orb {
+  opacity: 0.12 !important;
+}
+
+/* Ensure strong contrast in light mode across text & elements */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-slate-300 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light .bg-black\/20,
+html.light .bg-black\/25,
+html.light .bg-black\/30,
+html.light .bg-black\/40 {
+  background-color: rgba(241, 245, 249, 0.85) !important;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
 body {
   color: var(--text);
   background-color: var(--bg);
@@ -255,4 +331,88 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* =========================================================================
+ * SLIPPERY JELLYFISH HOVER EFFECT (UIVERSE.IO/CSSBUTTONS-IO/SLIPPERY-JELLYFISH-67)
+ * Adapted to AidGrid liquid glass theme with high legibility in light & dark modes
+ * ========================================================================= */
+
+.btn-jellyfish {
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid rgba(0, 209, 255, 0.35);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #38bdf8;
+  font-weight: 700;
+  transition: color 0.4s ease, border-color 0.3s ease, transform 0.25s cubic-bezier(0.34, 1.45, 0.55, 1), box-shadow 0.3s ease;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-jellyfish::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(135deg, #00d1ff, #0ea5e9);
+  height: 280px;
+  width: 320px;
+  border-radius: 50%;
+  top: 100%;
+  left: 100%;
+  transition: all 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.btn-jellyfish:hover {
+  color: #030712 !important;
+  border-color: #00d1ff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 209, 255, 0.45);
+}
+
+.btn-jellyfish:hover::before {
+  top: -50px;
+  left: -50px;
+}
+
+.btn-jellyfish:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Subtle Secondary / Card Jellyfish Interactive Style for Selectable Sections */
+.jellyfish-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.35s ease, border-color 0.35s ease, transform 0.3s cubic-bezier(0.34, 1.45, 0.55, 1), box-shadow 0.35s ease;
+  z-index: 1;
+}
+
+.jellyfish-interactive::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(0, 209, 255, 0.25) 0%, rgba(14, 165, 233, 0.1) 60%, transparent 100%);
+  height: 380px;
+  width: 380px;
+  border-radius: 50%;
+  top: 100%;
+  left: 100%;
+  transition: all 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.jellyfish-interactive:hover {
+  border-color: rgba(0, 209, 255, 0.45) !important;
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 12px 28px -8px rgba(0, 209, 255, 0.28);
+}
+
+.jellyfish-interactive:hover::before {
+  top: -60px;
+  left: -60px;
 }

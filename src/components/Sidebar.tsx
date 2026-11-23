@@ -19,7 +19,7 @@ import {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { t, user, loginAsJudgeRole, setShowEmergencyModal } = useApp();
+  const { t, user, loginAsJudgeRole, setShowEmergencyModal, setIsSignInModalOpen } = useApp();
 
   const navigation = [
     {
@@ -156,46 +156,52 @@ export default function Sidebar() {
 
           {/* Switch Evaluator Role Section */}
           <div className="space-y-1 pt-1">
-            <span className="text-[9px] font-black uppercase tracking-wider text-cyan-400 block">
-              SWITCH EVALUATOR ROLE:
-            </span>
+            <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-cyan-400">
+              <span>4 ROLES SIGN IN:</span>
+              <button
+                onClick={() => setIsSignInModalOpen(true)}
+                className="hover:underline text-[9px] lowercase font-normal text-slate-400 hover:text-cyan-300"
+              >
+                manage
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-1 text-[10px]">
               <button
                 onClick={() => loginAsJudgeRole('SYSTEM_ADMIN')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'SYSTEM_ADMIN'
-                    ? 'bg-purple-600/40 border-purple-400 text-purple-200 shadow-sm'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                 }`}
               >
                 Admin
               </button>
               <button
                 onClick={() => loginAsJudgeRole('DEPARTMENT_MANAGER')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'DEPARTMENT_MANAGER'
-                    ? 'bg-blue-600/40 border-blue-400 text-blue-200 shadow-sm'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                 }`}
               >
                 Manager
               </button>
               <button
                 onClick={() => loginAsJudgeRole('FIELD_OFFICER')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'FIELD_OFFICER'
-                    ? 'bg-amber-600/40 border-amber-400 text-amber-200 shadow-sm'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                 }`}
               >
                 Field Lead
               </button>
               <button
                 onClick={() => loginAsJudgeRole('CITIZEN')}
-                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center ${
+                className={`py-1 px-2 rounded-lg font-bold border transition-all text-center jellyfish-interactive ${
                   user?.role === 'CITIZEN'
-                    ? 'bg-teal-600/40 border-teal-400 text-teal-200 shadow-sm'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
                 }`}
               >
                 Citizen
