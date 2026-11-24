@@ -8,7 +8,6 @@ interface CinematicIntroProps {
 
 export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
   const [isExiting, setIsExiting] = useState(false);
-  const [progress, setProgress] = useState(0);
   const audioPlayedRef = useRef(false);
 
   // Play minimalist cinematic tone using Web Audio API
@@ -54,21 +53,12 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
     }
   }, []);
 
-  // Timer and progress bar
+  // Timer
   useEffect(() => {
-    const startTime = Date.now();
     const duration = 2800; // 2.8 seconds total
-
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const p = Math.min(100, (elapsed / duration) * 100);
-      setProgress(p);
-
-      if (elapsed >= duration) {
-        clearInterval(interval);
-        handleFinish();
-      }
-    }, 30);
+    const timer = setTimeout(() => {
+      handleFinish();
+    }, duration);
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
@@ -78,7 +68,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
     window.addEventListener('keydown', handleKey);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timer);
       window.removeEventListener('keydown', handleKey);
     };
   }, []);
@@ -169,13 +159,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
         </div>
       </div>
 
-      {/* Bottom Progress Line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5">
-        <div
-          className="h-full bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-500 transition-all duration-75"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+
 
 
     </div>

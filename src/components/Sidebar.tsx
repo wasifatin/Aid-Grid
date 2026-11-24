@@ -99,11 +99,14 @@ export default function Sidebar() {
                   href={item.href}
                   className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.55,1)] ${
                     isActive
-                      ? 'glass-lens text-white shadow-lg shadow-cyan-500/20 translate-x-1'
+                      ? 'glass-lens text-white shadow-lg shadow-cyan-500/20 translate-x-1 border border-cyan-400/30'
                       : 'text-slate-300 hover:text-white hover:bg-white/5 hover:translate-x-1'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  {isActive && (
+                    <span className="absolute left-1 top-2 bottom-2 w-1 rounded-full bg-cyan-400 shadow-[0_0_8px_#00d1ff]" />
+                  )}
+                  <div className="flex items-center gap-3 pl-1">
                     <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-cyan-300' : 'text-slate-400'}`} />
                     <span className="tracking-wide">{item.name}</span>
                   </div>

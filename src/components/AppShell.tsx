@@ -68,7 +68,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 max-w-[1600px] w-full mx-auto px-2 sm:px-4 lg:px-6">
         <Sidebar />
         <main className="flex-1 p-3 sm:p-5 lg:p-6 overflow-x-hidden min-w-0">
-          {children}
+          <div key={pathname} className="pane-section-transition w-full">
+            {children}
+          </div>
         </main>
       </div>
 
