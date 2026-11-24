@@ -253,16 +253,15 @@ export default function LoginPage() {
         <section className="flow-card w-full p-6 sm:p-7 text-left shadow-2xl">
           {/* Brand Header */}
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-navy-950 font-black text-xs shadow-md shadow-cyan-500/30">
-                AG
-              </div>
-              <div>
-                <h1 className="text-sm font-black tracking-wider text-white">AIDGRID</h1>
-                <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider block">
-                  FLOW V2.6
-                </span>
-              </div>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/images/aidgrid-logo.png"
+                alt="AIDGRID"
+                className="h-8 w-auto object-contain filter drop-shadow-[0_0_12px_rgba(0,209,255,0.4)]"
+              />
+              <span className="text-[9px] text-cyan-400 font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30">
+                FLOW V2.6
+              </span>
             </div>
 
             <div className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">

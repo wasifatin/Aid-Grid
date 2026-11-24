@@ -124,7 +124,11 @@ export default function Sidebar() {
           {/* Header Row */}
           <div className="flex items-center justify-between text-[11px] px-1">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+              <img
+                src="/images/aidgrid-emblem.png"
+                alt="AIDGRID"
+                className="h-4 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(0,209,255,0.4)]"
+              />
               <span className="font-bold text-white tracking-wide">AIDGRID</span>
               <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
                 PANE V2.6

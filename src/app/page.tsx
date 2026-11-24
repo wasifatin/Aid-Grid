@@ -112,6 +112,11 @@ export default function CommandCenterPage() {
       <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
+            <img
+              src="/images/aidgrid-emblem.png"
+              alt="AIDGRID"
+              className="h-4 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(0,209,255,0.4)]"
+            />
             <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm">
               {t.nav.overview}
             </span>

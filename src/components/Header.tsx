@@ -66,29 +66,40 @@ export default function Header() {
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
 
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-indigo-500 flex items-center justify-center text-navy-950 font-black text-base shadow-lg shadow-cyan-500/30 group-hover:scale-105 group-hover:rotate-3 transition-transform">
-              AG
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative flex items-center">
+              <img
+                src="/images/aidgrid-logo.png"
+                alt="AIDGRID"
+                className="h-7 sm:h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_0_12px_rgba(0,209,255,0.45)]"
+              />
             </div>
-            <div>
-              <span className="text-base font-black tracking-wider text-white flex items-center gap-1.5">
-                AIDGRID
-                <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                  PANE
-                </span>
-              </span>
-              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-                {t.app.tagline}
-              </p>
-            </div>
+            <span className="text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 hidden sm:inline-block">
+              PANE V2.6
+            </span>
           </Link>
         </div>
 
         {/* Center Space for Dynamic Island */}
         <div className="flex-1 max-w-sm hidden md:block"></div>
 
-        {/* Right Controls: Bilingual Switcher, 4 Roles Sign In, & User Pill */}
+        {/* Right Controls: Replay Intro, Bilingual Switcher, 4 Roles Sign In, & User Pill */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Replay Cinematic Intro Trigger */}
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('aidgrid_intro_seen');
+                window.location.href = '/?intro=replay';
+              }
+            }}
+            title="Replay Cinematic Netflix Intro"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-cyan-300 transition-all shadow-sm"
+          >
+            <Sparkles className="w-3 h-3 text-cyan-400 animate-pulse" />
+            <span className="text-[10px] uppercase font-mono tracking-wider">Intro</span>
+          </button>
+
           {/* Bilingual Language Switcher (Glass Capsule) */}
           <div className="flex items-center bg-black/30 border border-white/10 rounded-full p-0.5 shadow-inner">
             <button
