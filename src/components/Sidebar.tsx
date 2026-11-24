@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -27,7 +27,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { t, user, loginAsJudgeRole, setShowEmergencyModal, setIsSignInModalOpen } = useApp();
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const roleMenuRef = useRef<HTMLDivElement>(null);
 
   const roles = [
     {
@@ -60,16 +60,31 @@ export default function Sidebar() {
     },
   ];
 
-  const handleMouseEnter = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    setRoleMenuOpen(true);
-  };
+  useEffect(() => {
+    if (!roleMenuOpen) return;
 
-  const handleMouseLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setRoleMenuOpen(false);
-    }, 140);
-  };
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      if (roleMenuRef.current && !roleMenuRef.current.contains(e.target as Node)) {
+        setRoleMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setRoleMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [roleMenuOpen]);
 
   const navigation = [
     {
@@ -203,18 +218,20 @@ export default function Sidebar() {
             <span>Pilot: <strong className="text-slate-200">Dhaka DNCC & DSCC (Zones 1-5)</strong></span>
           </div>
 
-          {/* Bottom Left Corner Role Hover Capsule */}
+          {/* Bottom Left Corner Role Menu Dock Capsule */}
           <div
+            ref={roleMenuRef}
             className="relative"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
           >
-            {/* Hovering Menu Bar (Pops up above trigger) */}
+            {/* Popover Menu Bar (Pops up above trigger, drops down smoothly) */}
             <div
+              id="role-menu-popover"
+              role="menu"
+              aria-orientation="vertical"
               className={`absolute bottom-full left-0 right-0 mb-2.5 z-50 rounded-2xl p-2.5 role-menu-opaque transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 roleMenuOpen
-                  ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
-                  : 'opacity-0 translate-y-2 scale-[0.96] pointer-events-none'
+                  ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto visible'
+                  : 'opacity-0 translate-y-2 scale-[0.96] pointer-events-none invisible'
               }`}
             >
               {/* Menu Header */}
@@ -239,7 +256,7 @@ export default function Sidebar() {
                         loginAsJudgeRole(r.role);
                         setRoleMenuOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all duration-150 group ${
+                      className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all duration-150 group cursor-pointer ${
                         isCurrent
                           ? 'bg-cyan-500/25 text-white border border-cyan-400/60 shadow-md shadow-cyan-500/25'
                           : 'bg-white/[0.04] hover:bg-white/10 text-white border border-transparent hover:border-white/10'
@@ -284,7 +301,7 @@ export default function Sidebar() {
                     setRoleMenuOpen(false);
                     setIsSignInModalOpen(true);
                   }}
-                  className="flex items-center gap-1.5 text-slate-200 hover:text-cyan-300 font-semibold transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
+                  className="flex items-center gap-1.5 text-slate-200 hover:text-cyan-300 font-semibold transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5 cursor-pointer"
                 >
                   <KeyRound className="w-3 h-3 text-cyan-400" />
                   <span>Custom Credentials</span>
@@ -295,8 +312,11 @@ export default function Sidebar() {
             {/* Trigger Profile Capsule (Matches video bottom-left row) */}
             <button
               type="button"
-              onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-              className={`w-full flex items-center justify-between p-2.5 rounded-2xl border transition-all duration-200 group text-left ${
+              onClick={() => setRoleMenuOpen((prev) => !prev)}
+              aria-expanded={roleMenuOpen}
+              aria-haspopup="true"
+              aria-controls="role-menu-popover"
+              className={`w-full flex items-center justify-between p-2.5 rounded-2xl border transition-all duration-200 group text-left cursor-pointer select-none ${
                 roleMenuOpen
                   ? 'bg-white/10 border-cyan-400/50 shadow-lg shadow-cyan-500/20'
                   : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-cyan-400/40'
