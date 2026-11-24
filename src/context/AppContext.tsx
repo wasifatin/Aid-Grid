@@ -53,11 +53,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.add('dark');
     }
 
-    // Check initial session
+    // Check initial session & enforce login on launch
+    const hasActiveSession = typeof window !== 'undefined' ? sessionStorage.getItem('aidgrid_auth_active') : null;
+    if (!hasActiveSession) {
+      setUser(null);
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+        return;
+      }
+    }
+
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
-        if (data.user) {
+        if (data.user && hasActiveSession) {
           setUser(data.user);
           if (data.user.preferredLang === 'bn') {
             setLang('bn');
@@ -65,15 +74,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         } else {
           // If not authenticated, prompt sign-in gate first
           setUser(null);
-          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-            window.location.href = '/login';
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('aidgrid_auth_active');
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
         }
       })
       .catch(() => {
         setUser(null);
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('aidgrid_auth_active');
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
         }
       });
   }, []);
@@ -97,6 +112,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
       const data = await res.json();
       if (data.user) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('aidgrid_auth_active', 'true');
+        }
         setUser(data.user);
         showToast(`Authenticated as: ${t.roles[role]} (${data.user.fullName})`);
         return { success: true };
@@ -117,6 +135,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
       const data = await res.json();
       if (data.success && data.user) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('aidgrid_auth_active', 'true');
+        }
         setUser(data.user);
         showToast(`Signed in successfully as ${data.user.fullName}!`);
         return { success: true };
@@ -130,6 +151,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await fetch('/api/auth/login', { method: 'DELETE' });
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('aidgrid_auth_active');
+    }
     setUser(null);
     showToast('Signed out of session.');
     if (typeof window !== 'undefined') {

@@ -435,14 +435,49 @@ body {
 }
 
 .flow-btn.is-melting {
-  transform: scale(0.95);
-  filter: blur(1px);
+  transform: scale(0.97);
+  /* blur removed per user instruction to keep text razor sharp */
 }
 
 .flow-btn.is-done {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5) !important;
+  filter: none !important;
+}
+
+/* Modal Pop-In and Pop-Out Animations */
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.86) translateY(12px);
+  }
+  65% {
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalPopOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.86) translateY(12px);
+  }
+}
+
+.modal-pop-in {
+  animation: modalPopIn 0.28s cubic-bezier(0.34, 1.45, 0.55, 1) forwards;
+}
+
+.modal-pop-out {
+  animation: modalPopOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Glassy Semi-Opaque Dropdown Menu & Custom Scrollbar */

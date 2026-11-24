@@ -113,8 +113,8 @@ export default function SignInModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative text-left overflow-hidden border border-white/15">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+      <div className="glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative text-left overflow-hidden border border-cyan-500/30 modal-pop-in">
         {/* Close Button */}
         <button
           onClick={() => setIsSignInModalOpen(false)}

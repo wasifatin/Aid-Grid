@@ -10,8 +10,8 @@ export default function EmergencyModal() {
   if (!showEmergencyModal) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-navy-900 border-2 border-rose-500/50 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/85 backdrop-blur-md">
+      <div className="bg-navy-900 border-2 border-rose-500/50 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left modal-pop-in">
         <button
           onClick={() => setShowEmergencyModal(false)}
           className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg"

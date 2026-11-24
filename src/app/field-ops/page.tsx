@@ -30,6 +30,15 @@ export default function FieldOperationsPage() {
   const [resolutionPhotoUrl, setResolutionPhotoUrl] = useState('');
   const [fieldNotes, setFieldNotes] = useState('');
   const [processingAction, setProcessingAction] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setResolvingAssignment(null);
+      setIsClosing(false);
+    }, 200);
+  };
 
   const fetchAssignments = async () => {
     setLoading(true);
@@ -136,7 +145,7 @@ export default function FieldOperationsPage() {
   };
 
   return (
-    <div className="space-y-6 perspective-container">
+    <div className="space-y-6">
       {/* Top Banner */}
       <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -267,11 +276,19 @@ export default function FieldOperationsPage() {
 
       {/* Resolution Submission Modal */}
       {resolvingAssignment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left animate-scaleUp">
+        <div
+          onClick={handleCloseModal}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left border border-cyan-500/30 ${
+              isClosing ? 'modal-pop-out' : 'modal-pop-in'
+            }`}
+          >
             <button
-              onClick={() => setResolvingAssignment(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
             >
               ✕
             </button>

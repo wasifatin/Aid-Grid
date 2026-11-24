@@ -47,6 +47,15 @@ export default function CommandCenterPage() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedReport(null);
+      setIsClosing(false);
+    }, 200);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -67,6 +76,10 @@ export default function CommandCenterPage() {
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && !sessionStorage.getItem('aidgrid_auth_active')) {
+      window.location.href = '/login';
+      return;
+    }
     fetchData();
   }, [searchTerm, selectedStatus, selectedPriority]);
 
@@ -94,7 +107,7 @@ export default function CommandCenterPage() {
   };
 
   return (
-    <div className="space-y-6 perspective-container">
+    <div className="space-y-6">
       {/* Top Banner (Liquid Glass Pane) */}
       <div className="glass-pane glass-rim p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -518,11 +531,19 @@ export default function CommandCenterPage() {
 
       {/* Report Details Drawer (Liquid Frosted Glass Sheet) */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative animate-scaleUp">
+        <div
+          onClick={handleCloseModal}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative border border-cyan-500/30 ${
+              isClosing ? 'modal-pop-out' : 'modal-pop-in'
+            }`}
+          >
             <button
-              onClick={() => setSelectedReport(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
             >
               ✕
             </button>
@@ -605,7 +626,7 @@ export default function CommandCenterPage() {
                 Inspect Workflow Pipeline
               </Link>
               <button
-                onClick={() => setSelectedReport(null)}
+                onClick={handleCloseModal}
                 className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-navy-950 text-xs font-black transition-all hover:scale-105"
               >
                 Close Drawer

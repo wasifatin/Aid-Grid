@@ -11,6 +11,15 @@ export default function PublicReportsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedReport(null);
+      setIsClosing(false);
+    }, 200);
+  };
 
   useEffect(() => {
     fetch(`/api/reports?search=${encodeURIComponent(searchTerm)}&limit=50`)
@@ -21,7 +30,7 @@ export default function PublicReportsPage() {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-6 perspective-container">
+    <div className="space-y-6">
       {/* Banner */}
       <div className="glass-pane glass-rim p-6 rounded-3xl text-left">
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
@@ -45,12 +54,15 @@ export default function PublicReportsPage() {
         />
       </div>
 
-      {/* Reports Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Reports Grid with 3D Perspective Card effect */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 perspective-container">
         {reports.map((r) => (
           <PerspectiveCard
             key={r.id}
-            onClick={() => setSelectedReport(r)}
+            onClick={() => {
+              setIsClosing(false);
+              setSelectedReport(r);
+            }}
             className="p-5 flex flex-col justify-between text-left"
           >
             <div>
@@ -86,30 +98,38 @@ export default function PublicReportsPage() {
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal - Rendered outside perspective-container for perfect screen center alignment */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left animate-scaleUp">
+        <div
+          onClick={handleCloseModal}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left border border-cyan-500/30 ${
+              isClosing ? 'modal-pop-out' : 'modal-pop-in'
+            }`}
+          >
             <button
-              onClick={() => setSelectedReport(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
             >
               ✕
             </button>
             <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
               {selectedReport.referenceNumber}
             </span>
-            <h3 className="text-lg font-black text-white mt-1 mb-2">
+            <h3 className="text-lg font-black text-white mt-2 mb-2">
               {selectedReport.title}
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed mb-4">
               {selectedReport.description}
             </p>
-            <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 space-y-1.5 mb-4">
+            <div className="bg-black/40 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 space-y-1.5 mb-4">
               <div>Address: <strong className="text-slate-100">{selectedReport.address}</strong></div>
-              <div>Category: <strong className="text-slate-100">{selectedReport.category?.name}</strong></div>
-              <div>Status: <strong className="text-cyan-300">{selectedReport.status}</strong></div>
-              <div>Priority: <strong className="text-rose-400">{selectedReport.priority}</strong></div>
+              <div>Category: <strong className="text-slate-100">{selectedReport.category?.name || 'Municipal Infrastructure'}</strong></div>
+              <div>Status: <strong className="text-cyan-300 font-bold">{selectedReport.status}</strong></div>
+              <div>Priority: <strong className="text-rose-400 font-bold">{selectedReport.priority}</strong></div>
             </div>
             {selectedReport.resolutionSummary && (
               <div className="p-3.5 rounded-2xl bg-teal-500/15 border border-teal-500/30 text-xs text-teal-300 mb-4 font-medium">
@@ -117,8 +137,8 @@ export default function PublicReportsPage() {
               </div>
             )}
             <button
-              onClick={() => setSelectedReport(null)}
-              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-all"
+              onClick={handleCloseModal}
+              className="w-full py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 text-xs font-bold transition-all shadow-sm"
             >
               Close
             </button>

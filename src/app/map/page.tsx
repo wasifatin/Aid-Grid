@@ -106,8 +106,8 @@ export default function LiveMapPage() {
                 rep.priority === 'CRITICAL'
                   ? 'bg-rose-500 text-white shadow-rose-500/50'
                   : rep.priority === 'HIGH'
-                  ? 'bg-orange-500 text-white shadow-orange-500/50'
-                  : 'bg-cyan-400 text-navy-950 shadow-cyan-400/50';
+                    ? 'bg-orange-500 text-white shadow-orange-500/50'
+                    : 'bg-cyan-400 text-navy-950 shadow-cyan-400/50';
 
               return (
                 <div
@@ -116,9 +116,8 @@ export default function LiveMapPage() {
                     transform: `translate(${offsetLng}px, ${offsetLat}px)`,
                   }}
                   onClick={() => setActiveReport(rep)}
-                  className={`absolute cursor-pointer transition-all duration-300 hover:scale-125 z-10 ${
-                    isSelected ? 'scale-125 ring-4 ring-white z-30' : ''
-                  }`}
+                  className={`absolute cursor-pointer transition-all duration-300 hover:scale-125 z-10 ${isSelected ? 'scale-125 ring-4 ring-white z-30' : ''
+                    }`}
                   title={`${rep.referenceNumber}: ${rep.title}`}
                 >
                   <div className={`w-8 h-8 rounded-full ${pinColor} flex items-center justify-center font-black text-[11px] shadow-lg border border-white/20`}>

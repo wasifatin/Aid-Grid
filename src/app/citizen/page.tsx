@@ -51,6 +51,15 @@ export default function CitizenPortalPage() {
   const [rating, setRating] = useState(5);
   const [feedbackComment, setFeedbackComment] = useState('');
   const [reopenReason, setReopenReason] = useState('');
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseReview = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setReviewingReport(null);
+      setIsClosing(false);
+    }, 200);
+  };
 
   // Fetch Nearby Duplicates (Stabilized against category switches to eliminate flicker)
   useEffect(() => {
@@ -201,7 +210,7 @@ export default function CitizenPortalPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto perspective-container">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Banner */}
       <div className="glass-pane glass-rim p-6 rounded-3xl">
         <div className="flex items-center gap-2 mb-1.5">
@@ -543,11 +552,19 @@ export default function CitizenPortalPage() {
 
       {/* Citizen Verification Modal */}
       {reviewingReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-          <div className="glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left animate-scaleUp">
+        <div
+          onClick={handleCloseReview}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left border border-teal-500/30 ${
+              isClosing ? 'modal-pop-out' : 'modal-pop-in'
+            }`}
+          >
             <button
-              onClick={() => setReviewingReport(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5"
+              onClick={handleCloseReview}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
             >
               ✕
             </button>

@@ -118,6 +118,10 @@ export default function LoginPage() {
       // Authenticate via credentials
       const res = await loginWithCredentials(email, password);
       if (res.success) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('aidgrid_auth_active', 'true');
+        }
+        setIsMelting(false);
         setIsDone(true);
         setStatusMsg('Welcome back!');
         // Liquid melt completion then smooth transition to dashboard
@@ -167,11 +171,15 @@ export default function LoginPage() {
     try {
       const res = await loginAsJudgeRole(role);
       if (res?.success !== false) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('aidgrid_auth_active', 'true');
+        }
+        setIsMelting(false);
         setIsDone(true);
         setStatusMsg('Welcome back!');
         setTimeout(() => {
           router.push('/');
-        }, 800);
+        }, 500);
       } else {
         setIsMelting(false);
         setIsDone(false);
@@ -216,33 +224,33 @@ export default function LoginPage() {
         <div className="wall-orb wall-orb-2" style={{ width: '650px', height: '650px', bottom: '-200px', right: '10%' }}></div>
       </div>
 
-      <main className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center">
+      <main className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center my-auto">
         {/* ===================== THE LIQUID HERO ===================== */}
         {/* Living cluster of metaballs that breathe and react to cursor movement */}
         <div
           ref={stageRef}
-          className="w-48 h-36 flex items-center justify-center mb-2 transition-transform duration-300 ease-out pointer-events-none"
+          className="w-36 h-24 flex items-center justify-center mb-1 transition-transform duration-300 ease-out pointer-events-none"
           style={{
             transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)`,
-            filter: 'drop-shadow(0 20px 35px rgba(0, 209, 255, 0.45))',
+            filter: 'drop-shadow(0 15px 30px rgba(0, 209, 255, 0.45))',
           }}
         >
-          <svg className="w-full h-full" viewBox="0 0 240 200">
+          <svg className="w-full h-full" viewBox="0 0 240 180">
             <g filter="url(#flowGoo)" fill="url(#flowLiquidGrad)">
-              <circle cx="120" cy="100" r="36" />
-              <circle cx="100" cy="90" r="26" />
-              <circle cx="140" cy="90" r="24" />
-              <circle cx="120" cy="120" r="26" />
-              <circle cx="110" cy="105" r="22" />
+              <circle cx="120" cy="90" r="32" />
+              <circle cx="102" cy="80" r="23" />
+              <circle cx="138" cy="80" r="22" />
+              <circle cx="120" cy="108" r="23" />
+              <circle cx="112" cy="95" r="20" />
             </g>
             {/* Specular gloss sheen */}
-            <ellipse cx="106" cy="82" rx="24" ry="14" fill="url(#flowGlossGrad)" />
-            <circle cx="140" cy="78" r="4" fill="#ffffff" />
+            <ellipse cx="108" cy="74" rx="20" ry="12" fill="url(#flowGlossGrad)" />
+            <circle cx="138" cy="70" r="3.5" fill="#ffffff" />
           </svg>
         </div>
 
         {/* ===================== THE FLOW CARD ===================== */}
-        <section className="flow-card w-full p-6 sm:p-7 text-left">
+        <section className="flow-card w-full p-6 sm:p-7 text-left shadow-2xl">
           {/* Brand Header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -353,7 +361,7 @@ export default function LoginPage() {
               type="submit"
               disabled={submitting}
               className={`flow-btn w-full py-3.5 mt-2 flex items-center justify-center gap-2 text-xs uppercase tracking-wider ${
-                isMelting ? 'is-melting' : ''
+                isMelting && !isDone ? 'is-melting' : ''
               } ${isDone ? 'is-done' : ''}`}
             >
               {isDone ? (
