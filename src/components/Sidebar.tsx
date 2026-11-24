@@ -211,23 +211,23 @@ export default function Sidebar() {
           >
             {/* Hovering Menu Bar (Pops up above trigger) */}
             <div
-              className={`absolute bottom-full left-0 right-0 mb-2.5 z-50 rounded-2xl p-2 bg-[#0b1222]/98 backdrop-blur-2xl border border-cyan-400/30 shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_25px_rgba(0,209,255,0.15)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`absolute bottom-full left-0 right-0 mb-2.5 z-50 rounded-2xl p-2.5 role-menu-opaque transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 roleMenuOpen
                   ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
                   : 'opacity-0 translate-y-2 scale-[0.96] pointer-events-none'
               }`}
             >
               {/* Menu Header */}
-              <div className="flex items-center justify-between px-2.5 py-1.5 mb-1 border-b border-white/10 text-[9px] font-black uppercase tracking-wider text-slate-400">
+              <div className="flex items-center justify-between px-2 py-1.5 mb-1.5 border-b border-white/10 text-[9px] font-black uppercase tracking-wider text-slate-300">
                 <span className="flex items-center gap-1.5 text-cyan-300">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   Switch Evaluator Role
                 </span>
-                <span className="text-[8px] font-mono text-slate-500">4 ROLES</span>
+                <span className="text-[8px] font-mono text-cyan-300/80">4 ROLES</span>
               </div>
 
               {/* Roles List */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {roles.map((r) => {
                   const RoleIcon = r.icon;
                   const isCurrent = (user?.role || 'SYSTEM_ADMIN') === r.role;
@@ -241,35 +241,35 @@ export default function Sidebar() {
                       }}
                       className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all duration-150 group ${
                         isCurrent
-                          ? 'bg-cyan-500/20 text-white border border-cyan-400/40 shadow-sm shadow-cyan-500/20'
-                          : 'hover:bg-white/10 text-slate-300 hover:text-white border border-transparent'
+                          ? 'bg-cyan-500/25 text-white border border-cyan-400/60 shadow-md shadow-cyan-500/25'
+                          : 'bg-white/[0.04] hover:bg-white/10 text-white border border-transparent hover:border-white/10'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                             isCurrent
-                              ? 'bg-cyan-400 text-navy-950 font-black'
-                              : 'bg-white/5 text-slate-300 group-hover:text-cyan-300 group-hover:bg-white/10'
+                              ? 'bg-cyan-400 text-navy-950 font-black shadow-sm shadow-cyan-400/40'
+                              : 'bg-white/10 text-cyan-300 group-hover:bg-cyan-500/20'
                           }`}
                         >
                           <RoleIcon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-bold truncate leading-tight flex items-center gap-1.5">
-                            <span>{r.name}</span>
-                            <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300">
+                          <div className="text-xs font-black text-white leading-tight flex items-center gap-1.5">
+                            <span className="truncate">{r.name}</span>
+                            <span className="shrink-0 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/15 text-cyan-200 border border-white/10">
                               {r.badge}
                             </span>
                           </div>
-                          <p className="text-[9px] text-slate-400 truncate leading-tight mt-0.5">
+                          <p className="text-[10px] text-slate-200 font-medium leading-tight mt-0.5 truncate">
                             {r.subtitle}
                           </p>
                         </div>
                       </div>
 
                       {isCurrent && (
-                        <Check className="w-4 h-4 text-cyan-400 shrink-0 ml-1.5" />
+                        <Check className="w-4 h-4 text-cyan-400 stroke-[3] shrink-0 ml-1.5" />
                       )}
                     </button>
                   );
@@ -277,14 +277,14 @@ export default function Sidebar() {
               </div>
 
               {/* Footer Utilities */}
-              <div className="mt-1.5 pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] px-1">
+              <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] px-1">
                 <button
                   type="button"
                   onClick={() => {
                     setRoleMenuOpen(false);
                     setIsSignInModalOpen(true);
                   }}
-                  className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-300 transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
+                  className="flex items-center gap-1.5 text-slate-200 hover:text-cyan-300 font-semibold transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
                 >
                   <KeyRound className="w-3 h-3 text-cyan-400" />
                   <span>Custom Credentials</span>
