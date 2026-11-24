@@ -1,6 +1,7 @@
 {
   "name": "aidgrid",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "description": "AidGrid — Intelligent Civic Problem-Solving & Public Service Intelligence Platform",
   "scripts": {
