@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Sparkles, ArrowRight, Shield } from 'lucide-react';
 
 interface CinematicIntroProps {
   onComplete: () => void;
@@ -178,18 +177,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
         />
       </div>
 
-      {/* Bottom Right Skip Button */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleFinish();
-        }}
-        className="absolute bottom-6 right-6 z-20 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-400/40 text-slate-300 hover:text-white text-[11px] font-bold tracking-wider transition-all backdrop-blur-md"
-      >
-        <span>SKIP</span>
-        <ArrowRight className="w-3 h-3 text-cyan-400" />
-      </button>
+
     </div>
   );
 }

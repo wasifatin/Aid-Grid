@@ -11,7 +11,6 @@ import {
   PhoneCall,
   LogOut,
   ExternalLink,
-  Sparkles,
   LogIn,
   Users,
   Menu,
@@ -83,22 +82,8 @@ export default function Header() {
         {/* Center Space for Dynamic Island */}
         <div className="flex-1 max-w-sm hidden md:block"></div>
 
-        {/* Right Controls: Replay Intro, Bilingual Switcher, 4 Roles Sign In, & User Pill */}
+        {/* Right Controls: Bilingual Switcher, 4 Roles Sign In, & User Pill */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Replay Cinematic Intro Trigger */}
-          <button
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                sessionStorage.removeItem('aidgrid_intro_seen');
-                window.location.href = '/?intro=replay';
-              }
-            }}
-            title="Replay Cinematic Netflix Intro"
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-cyan-300 transition-all shadow-sm"
-          >
-            <Sparkles className="w-3 h-3 text-cyan-400 animate-pulse" />
-            <span className="text-[10px] uppercase font-mono tracking-wider">Intro</span>
-          </button>
 
           {/* Bilingual Language Switcher (Glass Capsule) */}
           <div className="flex items-center bg-black/30 border border-white/10 rounded-full p-0.5 shadow-inner">
