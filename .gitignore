@@ -4,7 +4,12 @@ out
 build
 dist
 .env.local
-dev.db
+# SQLite temporary transaction journals
 dev.db-journal
+dev.db-wal
+dev.db-shm
+*.db-journal
+*.db-wal
+*.db-shm
 *.log
 .DS_Store
