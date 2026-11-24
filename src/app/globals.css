@@ -638,4 +638,25 @@ body {
   animation: paneCardCascade 0.46s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
 }
 
+/* ==========================================================================
+   Bottom Left Role Menu Bar (Hover & Click Popover)
+   Matches video https://demo.codeandchill.store/pane/#/home
+   ========================================================================== */
+@keyframes roleMenuPopUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.role-menu-popup {
+  animation: roleMenuPopUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 

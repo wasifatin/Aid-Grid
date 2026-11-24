@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -15,11 +15,61 @@ import {
   BarChart3,
   FileText,
   PhoneCall,
+  Shield,
+  Building2,
+  Users,
+  Check,
+  ChevronUp,
+  KeyRound,
 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { t, user, loginAsJudgeRole, setShowEmergencyModal, setIsSignInModalOpen } = useApp();
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const roles = [
+    {
+      role: 'SYSTEM_ADMIN' as const,
+      name: 'System Admin',
+      subtitle: 'System & Security Operations',
+      icon: Shield,
+      badge: 'Admin',
+    },
+    {
+      role: 'DEPARTMENT_MANAGER' as const,
+      name: 'Department Manager',
+      subtitle: 'Triage, Assignment & SLA',
+      icon: Building2,
+      badge: 'Manager',
+    },
+    {
+      role: 'FIELD_OFFICER' as const,
+      name: 'Field Lead',
+      subtitle: 'On-site Operations & Dispatch',
+      icon: Truck,
+      badge: 'Field',
+    },
+    {
+      role: 'CITIZEN' as const,
+      name: 'Citizen',
+      subtitle: 'Public Grievance & Tracking',
+      icon: Users,
+      badge: 'Citizen',
+    },
+  ];
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setRoleMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setRoleMenuOpen(false);
+    }, 140);
+  };
 
   const navigation = [
     {
@@ -81,9 +131,9 @@ export default function Sidebar() {
   return (
     <aside className="w-72 p-3 pl-4 hidden md:flex flex-col shrink-0 sticky top-20 h-[calc(100vh-5.5rem)] pb-4">
       {/* Floating Liquid Glass Dock (Elongated Full Height & Spaced Sections) */}
-      <div className="glass-pane glass-rim p-4 rounded-3xl flex flex-col justify-between h-full shadow-2xl overflow-y-auto">
+      <div className="glass-pane glass-rim p-4 rounded-3xl flex flex-col justify-between h-full shadow-2xl relative">
         {/* Workspaces Menu Section */}
-        <div>
+        <div className="overflow-y-auto pr-1 flex-1 mb-2 custom-scrollbar">
           <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 mb-3 flex items-center justify-between">
             <span>Workspaces</span>
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
@@ -147,73 +197,136 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* Active Role Pill */}
-          <div className="flex items-center justify-between text-[10px] px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 shadow-inner">
-            <span className="text-slate-400 font-medium">Active Role:</span>
-            <span className="font-black text-cyan-300 uppercase tracking-wider">
-              {user?.role.replace('_', ' ') || 'SYSTEM ADMIN'}
-            </span>
-          </div>
-
           {/* Pilot Coverage Row */}
           <div className="text-[10px] text-slate-400 flex items-center gap-1.5 px-1 leading-tight">
             <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span>Pilot: <strong className="text-slate-200">Dhaka DNCC & DSCC (Zones 1-5)</strong></span>
           </div>
 
-          {/* 4 Roles Sign In Section */}
-          <div className="space-y-1.5 pt-1 border-t border-white/5">
-            <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-cyan-400 px-1">
-              <span>4 ROLES SIGN IN:</span>
-              <button
-                onClick={() => setIsSignInModalOpen(true)}
-                className="hover:underline text-[9px] lowercase font-normal text-slate-400 hover:text-cyan-300"
-              >
-                manage
-              </button>
+          {/* Bottom Left Corner Role Hover Capsule */}
+          <div
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Hovering Menu Bar (Pops up above trigger) */}
+            <div
+              className={`absolute bottom-full left-0 right-0 mb-2.5 z-50 rounded-2xl p-2 bg-[#0b1222]/98 backdrop-blur-2xl border border-cyan-400/30 shadow-[0_20px_50px_rgba(0,0,0,0.95),0_0_25px_rgba(0,209,255,0.15)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                roleMenuOpen
+                  ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+                  : 'opacity-0 translate-y-2 scale-[0.96] pointer-events-none'
+              }`}
+            >
+              {/* Menu Header */}
+              <div className="flex items-center justify-between px-2.5 py-1.5 mb-1 border-b border-white/10 text-[9px] font-black uppercase tracking-wider text-slate-400">
+                <span className="flex items-center gap-1.5 text-cyan-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  Switch Evaluator Role
+                </span>
+                <span className="text-[8px] font-mono text-slate-500">4 ROLES</span>
+              </div>
+
+              {/* Roles List */}
+              <div className="space-y-1">
+                {roles.map((r) => {
+                  const RoleIcon = r.icon;
+                  const isCurrent = (user?.role || 'SYSTEM_ADMIN') === r.role;
+                  return (
+                    <button
+                      key={r.role}
+                      type="button"
+                      onClick={() => {
+                        loginAsJudgeRole(r.role);
+                        setRoleMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all duration-150 group ${
+                        isCurrent
+                          ? 'bg-cyan-500/20 text-white border border-cyan-400/40 shadow-sm shadow-cyan-500/20'
+                          : 'hover:bg-white/10 text-slate-300 hover:text-white border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isCurrent
+                              ? 'bg-cyan-400 text-navy-950 font-black'
+                              : 'bg-white/5 text-slate-300 group-hover:text-cyan-300 group-hover:bg-white/10'
+                          }`}
+                        >
+                          <RoleIcon className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold truncate leading-tight flex items-center gap-1.5">
+                            <span>{r.name}</span>
+                            <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300">
+                              {r.badge}
+                            </span>
+                          </div>
+                          <p className="text-[9px] text-slate-400 truncate leading-tight mt-0.5">
+                            {r.subtitle}
+                          </p>
+                        </div>
+                      </div>
+
+                      {isCurrent && (
+                        <Check className="w-4 h-4 text-cyan-400 shrink-0 ml-1.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Footer Utilities */}
+              <div className="mt-1.5 pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] px-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRoleMenuOpen(false);
+                    setIsSignInModalOpen(true);
+                  }}
+                  className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-300 transition-colors py-1 px-1.5 rounded-lg hover:bg-white/5"
+                >
+                  <KeyRound className="w-3 h-3 text-cyan-400" />
+                  <span>Custom Credentials</span>
+                </button>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <button
-                onClick={() => loginAsJudgeRole('SYSTEM_ADMIN')}
-                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
-                  user?.role === 'SYSTEM_ADMIN'
-                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
+
+            {/* Trigger Profile Capsule (Matches video bottom-left row) */}
+            <button
+              type="button"
+              onClick={() => setRoleMenuOpen(!roleMenuOpen)}
+              className={`w-full flex items-center justify-between p-2.5 rounded-2xl border transition-all duration-200 group text-left ${
+                roleMenuOpen
+                  ? 'bg-white/10 border-cyan-400/50 shadow-lg shadow-cyan-500/20'
+                  : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-cyan-400/40'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                {/* Avatar with Glow */}
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 via-sky-500 to-indigo-600 flex items-center justify-center text-navy-950 font-black text-xs shadow-md shadow-cyan-500/30 shrink-0">
+                    {user?.fullName?.charAt(0) || 'S'}
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-teal-400 border-2 border-[#0e1628] shadow-sm" />
+                </div>
+
+                <div className="min-w-0">
+                  <div className="text-xs font-black text-white truncate leading-tight group-hover:text-cyan-200 transition-colors">
+                    {user?.fullName || 'Sayeed Rahman'}
+                  </div>
+                  <div className="text-[10px] font-bold text-cyan-400 truncate uppercase tracking-wider leading-tight flex items-center gap-1 mt-0.5">
+                    <span>{user?.role?.replace('_', ' ') || 'SYSTEM ADMIN'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <ChevronUp
+                className={`w-4 h-4 transition-transform duration-200 shrink-0 ${
+                  roleMenuOpen ? 'rotate-180 text-cyan-400' : 'text-slate-400 group-hover:text-white'
                 }`}
-              >
-                Admin
-              </button>
-              <button
-                onClick={() => loginAsJudgeRole('DEPARTMENT_MANAGER')}
-                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
-                  user?.role === 'DEPARTMENT_MANAGER'
-                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
-                }`}
-              >
-                Manager
-              </button>
-              <button
-                onClick={() => loginAsJudgeRole('FIELD_OFFICER')}
-                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
-                  user?.role === 'FIELD_OFFICER'
-                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
-                }`}
-              >
-                Field Lead
-              </button>
-              <button
-                onClick={() => loginAsJudgeRole('CITIZEN')}
-                className={`py-1.5 px-2 rounded-xl font-bold border transition-all text-center jellyfish-interactive ${
-                  user?.role === 'CITIZEN'
-                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white'
-                }`}
-              >
-                Citizen
-              </button>
-            </div>
+              />
+            </button>
           </div>
         </div>
       </div>
