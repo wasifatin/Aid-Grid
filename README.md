@@ -4,9 +4,9 @@
 > **CODE-ARENAX — Hack the Vibe 2026**  
 > **Track:** WORLD PROBLEM SOLVER TRACK  
 > **Declared Advanced Challenges:**  
-> - **A02 — Intelligent Decisions & Optimization (20 Marks)**  
-> - **A07 — Automated Multi-Step Workflow (20 Marks)**  
-> **Mandatory Requirements:** M01 to M08 (60 Marks)  
+> - **A02 — Intelligent Decisions & Optimization**  
+> - **A07 — Automated Multi-Step Workflow**  
+> **Mandatory Requirements:** M01 to M08  
 > **Target Pilot Region:** Dhaka Municipal Corporation Pilot Area (DNCC & DSCC, Bangladesh)
 
 ---
