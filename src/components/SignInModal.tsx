@@ -26,7 +26,7 @@ const PRESET_ROLES = [
     name: 'Citizen Portal',
     email: 'citizen@aidgrid.gov.bd',
     fullName: 'Rahim Ahmed',
-    description: 'Public issue reporting, interactive map pinning, duplicate detection, and citizen resolution review.',
+    description: 'Read-only viewing of public civic cases, live status tracking, and GIS map inspection.',
     icon: Users,
     badge: 'Resident Access',
     badgeColor: 'border-cyan-400/40 text-cyan-300 bg-cyan-500/15',

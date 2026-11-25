@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import CitizenReadOnlyNotice from '@/components/CitizenReadOnlyNotice';
 import { FileText, Shield, Clock, Search, RefreshCw, Sparkles } from 'lucide-react';
 
 export default function AuditLogsPage() {
-  const { t } = useApp();
+  const { t, user } = useApp();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,8 +24,19 @@ export default function AuditLogsPage() {
   };
 
   useEffect(() => {
-    fetchLogs();
-  }, []);
+    if (user?.role !== 'CITIZEN') {
+      fetchLogs();
+    }
+  }, [user?.role]);
+
+  if (user?.role === 'CITIZEN') {
+    return (
+      <CitizenReadOnlyNotice
+        title="Audit Trail Restricted"
+        description="Citizen accounts can view public civic cases and live status updates, and cannot access internal operational audit logs."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 perspective-container">

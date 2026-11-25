@@ -38,6 +38,7 @@ export default function Header() {
     setIsSignInModalOpen,
   } = useApp();
 
+  const isReadOnlyCitizen = !user || user.role === 'CITIZEN';
   const navigation = [
     { name: t.nav.overview, href: '/', icon: LayoutDashboard },
     { name: t.nav.citizenPortal, href: '/citizen', icon: FilePlus },
@@ -48,7 +49,7 @@ export default function Header() {
     { name: 'Workflow Engine', href: '/workflow', icon: GitBranch },
     { name: t.nav.analytics, href: '/analytics', icon: BarChart3 },
     { name: t.nav.auditLogs, href: '/audit', icon: FileText },
-  ];
+  ].filter((item) => !isReadOnlyCitizen || ['/', '/reports', '/map', '/analytics'].includes(item.href));
 
   return (
     <header className="sticky top-0 z-40 px-3 sm:px-4 lg:px-6 pt-3 pb-2">

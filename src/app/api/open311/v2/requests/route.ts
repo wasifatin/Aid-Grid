@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { executeReportWorkflow } from '@/lib/workflow-engine';
+import { rejectCitizenMutation } from '@/lib/auth';
 
 /**
  * Open311 GeoReport v2 - GET & POST /requests.json
@@ -58,6 +59,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const forbidden = rejectCitizenMutation(req);
+  if (forbidden) return forbidden;
+
   try {
     const body = await req.json();
     const {

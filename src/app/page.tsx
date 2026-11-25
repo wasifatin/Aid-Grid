@@ -40,7 +40,8 @@ import {
 } from 'recharts';
 
 export default function CommandCenterPage() {
-  const { t, lang } = useApp();
+  const { t, lang, user } = useApp();
+  const isCitizen = user?.role === 'CITIZEN';
   const [analytics, setAnalytics] = useState<any>(null);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,6 +122,11 @@ export default function CommandCenterPage() {
             <span className="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-sm">
               {t.nav.overview}
             </span>
+            {isCitizen && (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-400/35">
+                Read-Only View
+              </span>
+            )}
             <span className="text-xs text-slate-400 font-medium">
               Enterprise Civic Operations Console
             </span>
@@ -142,12 +148,14 @@ export default function CommandCenterPage() {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
-          <Link
-            href="/citizen"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20"
-          >
-            <span>+ Report Issue</span>
-          </Link>
+          {user && !isCitizen && (
+            <Link
+              href="/citizen"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl btn-jellyfish font-black text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20"
+            >
+              <span>+ Report Issue</span>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -630,12 +638,14 @@ export default function CommandCenterPage() {
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
-                <Link
-                  href="/workflow"
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors border border-white/10"
-                >
-                  Inspect Workflow Pipeline
-                </Link>
+                {user && !isCitizen && (
+                  <Link
+                    href="/workflow"
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors border border-white/10"
+                  >
+                    Inspect Workflow Pipeline
+                  </Link>
+                )}
                 <button
                   onClick={handleCloseModal}
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-navy-950 text-xs font-black transition-all hover:scale-105"

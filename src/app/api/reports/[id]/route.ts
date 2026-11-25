@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { rejectCitizenMutation } from '@/lib/auth';
 
 export async function GET(
   req: Request,
@@ -62,6 +63,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  const forbidden = rejectCitizenMutation(req);
+  if (forbidden) return forbidden;
+
   try {
     const body = await req.json();
     const {
@@ -75,6 +79,19 @@ export async function PATCH(
       changedById,
       changeReason,
     } = body;
+
+    if (changedById) {
+      const actor = await prisma.profile.findUnique({
+        where: { id: changedById },
+        select: { role: true },
+      });
+      if (actor?.role === 'CITIZEN') {
+        return NextResponse.json(
+          { error: 'Forbidden: Citizen role has read-only access and cannot change any document.' },
+          { status: 403 }
+        );
+      }
+    }
 
     const current = await prisma.report.findUnique({
       where: { id: params.id },

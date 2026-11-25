@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
+import CitizenReadOnlyNotice from '@/components/CitizenReadOnlyNotice';
 import {
   GitBranch,
   Play,
@@ -22,7 +23,7 @@ import {
 import { WORKFLOW_STEPS_DEF } from '@/lib/constants';
 
 export default function WorkflowCenterPage() {
-  const { t, lang, showToast } = useApp();
+  const { t, lang, user, showToast } = useApp();
 
   const [runs, setRuns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,6 +101,15 @@ export default function WorkflowCenterPage() {
       setRunningHeartbeat(false);
     }
   };
+
+  if (user?.role === 'CITIZEN') {
+    return (
+      <CitizenReadOnlyNotice
+        title="Workflow Engine Restricted"
+        description="Citizen accounts have read-only case viewing access and cannot trigger SLA escalations or modify workflow runs."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 perspective-container">

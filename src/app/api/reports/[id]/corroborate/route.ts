@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { calculateExplainablePriority } from '@/lib/decision-engine';
+import { rejectCitizenMutation } from '@/lib/auth';
 
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  const forbidden = rejectCitizenMutation(req);
+  if (forbidden) return forbidden;
+
   try {
     const report = await prisma.report.findUnique({
       where: { id: params.id },

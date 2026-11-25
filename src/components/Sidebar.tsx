@@ -54,7 +54,7 @@ export default function Sidebar() {
     {
       role: 'CITIZEN' as const,
       name: 'Citizen',
-      subtitle: 'Public Grievance & Tracking',
+      subtitle: 'Read-Only Case Viewing',
       icon: Users,
       badge: 'Citizen',
     },
@@ -86,6 +86,7 @@ export default function Sidebar() {
     };
   }, [roleMenuOpen]);
 
+  const isReadOnlyCitizen = !user || user.role === 'CITIZEN';
   const navigation = [
     {
       name: t.nav.overview,
@@ -141,7 +142,7 @@ export default function Sidebar() {
       icon: FileText,
       badge: null,
     },
-  ];
+  ].filter((item) => !isReadOnlyCitizen || ['/', '/reports', '/map', '/analytics'].includes(item.href));
 
   return (
     <aside className="w-72 p-3 pl-4 hidden md:flex flex-col shrink-0 sticky top-20 h-[calc(100vh-5.5rem)] pb-4">

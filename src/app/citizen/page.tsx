@@ -5,6 +5,7 @@ import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
 import CustomDropdown from '@/components/CustomDropdown';
 import ModalPortal from '@/components/ModalPortal';
+import CitizenReadOnlyNotice from '@/components/CitizenReadOnlyNotice';
 import {
   FilePlus,
   MapPin,
@@ -209,6 +210,61 @@ export default function CitizenPortalPage() {
       console.error(e);
     }
   };
+
+  if (user?.role === 'CITIZEN') {
+    return (
+      <div className="space-y-6 max-w-5xl mx-auto">
+        <CitizenReadOnlyNotice
+          title="Read-Only Case Access"
+          description="Citizen accounts can view civic cases and track live status updates, but cannot submit new reports, corroborate scores, or modify any document."
+        />
+
+        <div className="glass-pane glass-rim p-6 rounded-3xl shadow-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-white uppercase tracking-wider">
+              {t.citizen.myIssues}
+            </h2>
+            <button
+              onClick={fetchMyReports}
+              className="text-xs text-cyan-400 hover:underline font-bold"
+            >
+              Refresh
+            </button>
+          </div>
+
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+            {myReports.length === 0 ? (
+              <div className="p-4 text-center text-xs text-slate-400">
+                {t.citizen.noIssues}
+              </div>
+            ) : (
+              myReports.map((r) => (
+                <div
+                  key={r.id}
+                  className="p-3.5 rounded-2xl bg-black/30 border border-white/10 space-y-1.5 text-left"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-cyan-300">
+                      {r.referenceNumber}
+                    </span>
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full border bg-white/5 text-slate-300 border-white/10">
+                      {r.status}
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-slate-200 line-clamp-1">
+                    {r.title}
+                  </p>
+                  <p className="text-[11px] text-slate-400 line-clamp-1">
+                    {r.address}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

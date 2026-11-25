@@ -53,7 +53,7 @@ const PRESET_ROLES = [
     email: 'citizen@aidgrid.gov.bd',
     icon: Users,
     badge: 'Mirpur Resident',
-    desc: 'Civic issue reporting & GIS map pinning',
+    desc: 'Read-only case viewing & GIS status tracking',
   },
 ];
 

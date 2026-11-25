@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
 import ModalPortal from '@/components/ModalPortal';
+import CitizenReadOnlyNotice from '@/components/CitizenReadOnlyNotice';
 import {
   Truck,
   CheckCircle2,
@@ -55,8 +56,19 @@ export default function FieldOperationsPage() {
   };
 
   useEffect(() => {
-    fetchAssignments();
-  }, []);
+    if (user?.role !== 'CITIZEN') {
+      fetchAssignments();
+    }
+  }, [user?.role]);
+
+  if (user?.role === 'CITIZEN') {
+    return (
+      <CitizenReadOnlyNotice
+        title="Field Operations Restricted"
+        description="Citizen accounts have read-only case viewing access and cannot acknowledge, start, or modify field assignments."
+      />
+    );
+  }
 
   // Quick Acknowledge
   const handleAcknowledge = async (assignmentId: string) => {

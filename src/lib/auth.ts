@@ -55,6 +55,50 @@ export function hasPermission(
   return requiredRoles.includes(userRole);
 }
 
+export function getTokenFromRequest(req: Request): string | null {
+  const authHeader = req.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.slice(7).trim();
+  }
+
+  const cookieHeader = req.headers.get('cookie');
+  if (!cookieHeader) return null;
+
+  for (const part of cookieHeader.split(';')) {
+    const [rawName, ...rest] = part.trim().split('=');
+    if (rawName === 'aidgrid_token') {
+      return decodeURIComponent(rest.join('='));
+    }
+  }
+
+  return null;
+}
+
+export function getRequestUser(req: Request): AuthUser | null {
+  const token = getTokenFromRequest(req);
+  if (!token) return null;
+  return verifyToken(token);
+}
+
+/**
+ * Citizen accounts have strict read-only access and may not create or modify any document.
+ */
+export function rejectCitizenMutation(req: Request): Response | null {
+  const user = getRequestUser(req);
+  if (user?.role === 'CITIZEN') {
+    return new Response(
+      JSON.stringify({
+        error: 'Forbidden: Citizen role has read-only access and cannot change any document.',
+      }),
+      {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+  return null;
+}
+
 export const ROLE_HIERARCHY = {
   SYSTEM_ADMIN: 4,
   DEPARTMENT_MANAGER: 3,

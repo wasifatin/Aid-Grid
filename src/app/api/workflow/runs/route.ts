@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { resumeWorkflowRun, runSlaEscalationHeartbeat } from '@/lib/workflow-engine';
+import { rejectCitizenMutation } from '@/lib/auth';
 
 export async function GET(req: Request) {
   try {
@@ -33,6 +34,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const forbidden = rejectCitizenMutation(req);
+  if (forbidden) return forbidden;
+
   try {
     const body = await req.json();
     const { action, workflowRunId } = body;

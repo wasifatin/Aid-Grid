@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
+import CitizenReadOnlyNotice from '@/components/CitizenReadOnlyNotice';
 import {
   Cpu,
   Sparkles,
@@ -23,7 +24,7 @@ import { PILOT_ZONES, CATEGORIES_LIST } from '@/lib/constants';
 import CustomDropdown from '@/components/CustomDropdown';
 
 export default function DecisionIntelligencePage() {
-  const { t, lang, showToast } = useApp();
+  const { t, lang, user, showToast } = useApp();
 
   // Factor Sliders State (0-100)
   const [safety, setSafety] = useState(85);
@@ -199,6 +200,15 @@ export default function DecisionIntelligencePage() {
       showToast('Loaded Scenario 4: Heavy Arborist Capacity Limitation (Expect: Verified Capacity Check)');
     }
   };
+
+  if (user?.role === 'CITIZEN') {
+    return (
+      <CitizenReadOnlyNotice
+        title="Decision Configuration Restricted"
+        description="Citizen accounts can view cases and public analytics, and cannot modify A02 priority weights or decision configuration documents."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 perspective-container">
