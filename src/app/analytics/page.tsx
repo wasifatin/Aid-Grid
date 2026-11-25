@@ -71,7 +71,7 @@ export default function AnalyticsPage() {
                   <td className="py-3.5 px-3 text-slate-300">{dept.reports}</td>
                   <td className="py-3.5 px-3 text-slate-200 font-bold">{dept.workload} / {dept.capacity}</td>
                   <td className="py-3.5 px-3">
-                    <span className="px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-400/30 shadow-sm">
+                    <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-400/30 shadow-sm">
                       {dept.utilizationRate}%
                     </span>
                   </td>

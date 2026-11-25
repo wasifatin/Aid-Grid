@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
 import CustomDropdown from '@/components/CustomDropdown';
+import ModalPortal from '@/components/ModalPortal';
 import {
   FilePlus,
   MapPin,
@@ -533,6 +534,7 @@ export default function CitizenPortalPage() {
                         </span>
                         <button
                           onClick={() => {
+                            setIsClosing(false);
                             setReviewingReport(r);
                             setReviewAction('CONFIRM');
                           }}
@@ -552,124 +554,126 @@ export default function CitizenPortalPage() {
 
       {/* Citizen Verification Modal */}
       {reviewingReport && (
-        <div
-          onClick={handleCloseReview}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
-        >
+        <ModalPortal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left border border-teal-500/30 ${
-              isClosing ? 'modal-pop-out' : 'modal-pop-in'
-            }`}
+            onClick={handleCloseReview}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
           >
-            <button
-              onClick={handleCloseReview}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto relative text-left border border-teal-500/30 ${
+                isClosing ? 'modal-pop-out' : 'modal-pop-in'
+              }`}
             >
-              ✕
-            </button>
+              <button
+                onClick={handleCloseReview}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                ✕
+              </button>
 
-            <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
-              {reviewingReport.referenceNumber}
-            </span>
-            <h3 className="text-lg font-black text-white mt-1 mb-2">
-              {t.citizen.verifyResolution}
-            </h3>
+              <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
+                {reviewingReport.referenceNumber}
+              </span>
+              <h3 className="text-lg font-black text-white mt-1 mb-2">
+                {t.citizen.verifyResolution}
+              </h3>
 
-            {reviewingReport.resolutionSummary && (
-              <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 mb-4">
-                <span className="text-slate-400 block font-bold mb-0.5">Field Officer Resolution Report:</span>
-                "{reviewingReport.resolutionSummary}"
+              {reviewingReport.resolutionSummary && (
+                <div className="bg-black/30 p-3.5 rounded-2xl border border-white/10 text-xs text-slate-300 mb-4">
+                  <span className="text-slate-400 block font-bold mb-0.5">Field Officer Resolution Report:</span>
+                  "{reviewingReport.resolutionSummary}"
+                </div>
+              )}
+
+              {/* Toggle Action */}
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setReviewAction('CONFIRM')}
+                  className={`py-2 text-xs font-black rounded-2xl border transition-all ${
+                    reviewAction === 'CONFIRM'
+                      ? 'bg-teal-500/20 border-teal-400 text-teal-300 shadow-sm'
+                      : 'bg-black/20 border-white/10 text-slate-400'
+                  }`}
+                >
+                  ✓ {t.citizen.confirmSatisfied}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReviewAction('REOPEN')}
+                  className={`py-2 text-xs font-black rounded-2xl border transition-all ${
+                    reviewAction === 'REOPEN'
+                      ? 'bg-rose-500/20 border-rose-400 text-rose-300 shadow-sm'
+                      : 'bg-black/20 border-white/10 text-slate-400'
+                  }`}
+                >
+                  ✕ {t.citizen.reopenIssue}
+                </button>
               </div>
-            )}
 
-            {/* Toggle Action */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <button
-                type="button"
-                onClick={() => setReviewAction('CONFIRM')}
-                className={`py-2 text-xs font-black rounded-2xl border transition-all ${
-                  reviewAction === 'CONFIRM'
-                    ? 'bg-teal-500/20 border-teal-400 text-teal-300 shadow-sm'
-                    : 'bg-black/20 border-white/10 text-slate-400'
-                }`}
-              >
-                ✓ {t.citizen.confirmSatisfied}
-              </button>
-              <button
-                type="button"
-                onClick={() => setReviewAction('REOPEN')}
-                className={`py-2 text-xs font-black rounded-2xl border transition-all ${
-                  reviewAction === 'REOPEN'
-                    ? 'bg-rose-500/20 border-rose-400 text-rose-300 shadow-sm'
-                    : 'bg-black/20 border-white/10 text-slate-400'
-                }`}
-              >
-                ✕ {t.citizen.reopenIssue}
-              </button>
-            </div>
+              {reviewAction === 'CONFIRM' ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                      {t.citizen.ratingPrompt}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          className={`p-2.5 rounded-xl border text-sm font-black transition-all ${
+                            star <= rating
+                              ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
+                              : 'bg-black/20 border-white/10 text-slate-500'
+                          }`}
+                        >
+                          ★ {star}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-            {reviewAction === 'CONFIRM' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                    {t.citizen.ratingPrompt}
-                  </label>
-                  <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        className={`p-2.5 rounded-xl border text-sm font-black transition-all ${
-                          star <= rating
-                            ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-sm'
-                            : 'bg-black/20 border-white/10 text-slate-500'
-                        }`}
-                      >
-                        ★ {star}
-                      </button>
-                    ))}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-300 mb-1">
+                      Feedback / Commendation Comment (Optional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Good speed, clean work site..."
+                      value={feedbackComment}
+                      onChange={(e) => setFeedbackComment(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white"
+                    />
                   </div>
                 </div>
-
+              ) : (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Feedback / Commendation Comment (Optional)
+                  <label className="block text-xs font-bold text-rose-400 mb-1">
+                    Reason for Rejecting & Reopening:
                   </label>
                   <textarea
-                    rows={2}
-                    placeholder="Good speed, clean work site..."
-                    value={feedbackComment}
-                    onChange={(e) => setFeedbackComment(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white"
+                    rows={3}
+                    required
+                    placeholder={t.reportForm.descPlaceholder}
+                    value={reopenReason}
+                    onChange={(e) => setReopenReason(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
                   />
                 </div>
-              </div>
-            ) : (
-              <div>
-                <label className="block text-xs font-bold text-rose-400 mb-1">
-                  Reason for Rejecting & Reopening:
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  placeholder={t.reportForm.descPlaceholder}
-                  value={reopenReason}
-                  onChange={(e) => setReopenReason(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
-                />
-              </div>
-            )}
+              )}
 
-            <button
-              onClick={handleCitizenVerification}
-              className="w-full mt-6 py-3 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:scale-[1.01]"
-            >
-              {t.citizen.submitFeedback}
-            </button>
+              <button
+                onClick={handleCitizenVerification}
+                className="w-full mt-6 py-3 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-400 text-navy-950 font-black text-xs uppercase tracking-wider shadow-lg transition-transform hover:scale-[1.01]"
+              >
+                {t.citizen.submitFeedback}
+              </button>
+            </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

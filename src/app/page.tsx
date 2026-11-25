@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
 import CustomDropdown from '@/components/CustomDropdown';
+import ModalPortal from '@/components/ModalPortal';
 import {
   AlertCircle,
   Clock,
@@ -457,9 +458,12 @@ export default function CommandCenterPage() {
                   <tr
                     key={report.id}
                     className="hover:bg-white/[0.04] transition-all group cursor-pointer"
-                    onClick={() => setSelectedReport(report)}
+                    onClick={() => {
+                      setIsClosing(false);
+                      setSelectedReport(report);
+                    }}
                   >
-                    <td className="py-3.5 px-4 font-mono font-bold text-cyan-300">
+                    <td className="py-3.5 px-4 font-mono font-bold text-cyan-300 whitespace-nowrap">
                       {report.referenceNumber}
                     </td>
                     <td className="py-3.5 px-4 max-w-xs">
@@ -470,21 +474,21 @@ export default function CommandCenterPage() {
                         {report.address}
                       </p>
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] font-semibold">
+                    <td className="py-3.5 px-4 min-w-[155px]">
+                      <span className="inline-block px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-[10px] font-semibold leading-snug">
                         {lang === 'bn' ? report.category?.nameBn || report.category?.name : report.category?.name}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-slate-300">
                       <div className="flex items-center gap-1 text-[11px]">
-                        <MapPin className="w-3 h-3 text-slate-400" />
+                        <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                         <span className="truncate max-w-[130px]">{report.serviceZone?.name || 'Dhaka Zone'}</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm"
+                          className="inline-flex items-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm"
                           style={{
                             backgroundColor: `${PRIORITY_COLORS[report.priority]}18`,
                             color: PRIORITY_COLORS[report.priority],
@@ -498,7 +502,7 @@ export default function CommandCenterPage() {
                     </td>
                     <td className="py-3.5 px-4">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm ${
+                        className={`inline-flex items-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm ${
                           STATUS_BADGE_CLASSES[report.status] || 'bg-white/5 text-slate-300'
                         }`}
                       >
@@ -518,6 +522,7 @@ export default function CommandCenterPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          setIsClosing(false);
                           setSelectedReport(report);
                         }}
                         className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors"
@@ -536,109 +541,111 @@ export default function CommandCenterPage() {
 
       {/* Report Details Drawer (Liquid Frosted Glass Sheet) */}
       {selectedReport && (
-        <div
-          onClick={handleCloseModal}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
-        >
+        <ModalPortal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className={`glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative border border-cyan-500/30 ${
-              isClosing ? 'modal-pop-out' : 'modal-pop-in'
-            }`}
+            onClick={handleCloseModal}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
           >
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`glass-pane-chrome glass-rim rounded-3xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-left relative border border-cyan-500/30 ${
+                isClosing ? 'modal-pop-out' : 'modal-pop-in'
+              }`}
             >
-              ✕
-            </button>
-
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 shadow-sm">
-                {selectedReport.referenceNumber}
-              </span>
-              <span
-                className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                  STATUS_BADGE_CLASSES[selectedReport.status] || ''
-                }`}
-              >
-                {selectedReport.status}
-              </span>
-            </div>
-
-            <h2 className="text-xl font-black text-white mb-2">
-              {selectedReport.title}
-            </h2>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">
-              {selectedReport.description}
-            </p>
-
-            {/* Evidence Photo */}
-            {selectedReport.resolutionEvidenceUrl && (
-              <div className="mb-4">
-                <span className="text-xs font-bold text-slate-400 block mb-1">
-                  Resolution Evidence Photographic Proof:
-                </span>
-                <img
-                  src={selectedReport.resolutionEvidenceUrl}
-                  alt="Resolution Evidence"
-                  className="rounded-2xl border border-white/10 h-44 w-full object-cover shadow-lg"
-                />
-              </div>
-            )}
-
-            {/* A02 Decision Breakdown Box */}
-            <div className="glass-pane p-4 rounded-2xl mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase text-cyan-400 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" /> A02 Decision Breakdown
-                </span>
-                <span className="text-xs font-mono font-bold text-white">
-                  Score: {selectedReport.priorityScore?.toFixed(1)}/100 [{selectedReport.priority}]
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-2 border-t border-white/10">
-                <div>Safety: <span className="text-white font-bold">{selectedReport.safetyScore}</span></div>
-                <div>Severity: <span className="text-white font-bold">{selectedReport.severityScore}</span></div>
-                <div>People: <span className="text-white font-bold">{selectedReport.peopleScore}</span></div>
-                <div>Location: <span className="text-white font-bold">{selectedReport.locationScore}</span></div>
-                <div>SLA Pressure: <span className="text-white font-bold">{selectedReport.slaScore}</span></div>
-                <div>Corroborations: <span className="text-teal-400 font-bold">{selectedReport.corroborationCount}</span></div>
-              </div>
-            </div>
-
-            {/* Location & Department */}
-            <div className="grid grid-cols-2 gap-4 text-xs bg-black/20 p-3.5 rounded-2xl border border-white/10 mb-4">
-              <div>
-                <span className="text-slate-400 block text-[10px]">Department:</span>
-                <span className="font-bold text-slate-200">{selectedReport.department?.name || 'Roads & Public Infra'}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px]">Zone:</span>
-                <span className="font-bold text-slate-200">{selectedReport.serviceZone?.name || 'Dhaka Zone'}</span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-slate-400 block text-[10px]">Address:</span>
-                <span className="text-slate-200">{selectedReport.address} ({selectedReport.latitude?.toFixed(4)}, {selectedReport.longitude?.toFixed(4)})</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
-              <Link
-                href="/workflow"
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors border border-white/10"
-              >
-                Inspect Workflow Pipeline
-              </Link>
               <button
                 onClick={handleCloseModal}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-navy-950 text-xs font-black transition-all hover:scale-105"
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
               >
-                Close Drawer
+                ✕
               </button>
+
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 shadow-sm">
+                  {selectedReport.referenceNumber}
+                </span>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                    STATUS_BADGE_CLASSES[selectedReport.status] || ''
+                  }`}
+                >
+                  {selectedReport.status}
+                </span>
+              </div>
+
+              <h2 className="text-xl font-black text-white mb-2">
+                {selectedReport.title}
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                {selectedReport.description}
+              </p>
+
+              {/* Evidence Photo */}
+              {selectedReport.resolutionEvidenceUrl && (
+                <div className="mb-4">
+                  <span className="text-xs font-bold text-slate-400 block mb-1">
+                    Resolution Evidence Photographic Proof:
+                  </span>
+                  <img
+                    src={selectedReport.resolutionEvidenceUrl}
+                    alt="Resolution Evidence"
+                    className="rounded-2xl border border-white/10 h-44 w-full object-cover shadow-lg"
+                  />
+                </div>
+              )}
+
+              {/* A02 Decision Breakdown Box */}
+              <div className="glass-pane p-4 rounded-2xl mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase text-cyan-400 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> A02 Decision Breakdown
+                  </span>
+                  <span className="text-xs font-mono font-bold text-white">
+                    Score: {selectedReport.priorityScore?.toFixed(1)}/100 [{selectedReport.priority}]
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-[11px] text-slate-300 pt-2 border-t border-white/10">
+                  <div>Safety: <span className="text-white font-bold">{selectedReport.safetyScore}</span></div>
+                  <div>Severity: <span className="text-white font-bold">{selectedReport.severityScore}</span></div>
+                  <div>People: <span className="text-white font-bold">{selectedReport.peopleScore}</span></div>
+                  <div>Location: <span className="text-white font-bold">{selectedReport.locationScore}</span></div>
+                  <div>SLA Pressure: <span className="text-white font-bold">{selectedReport.slaScore}</span></div>
+                  <div>Corroborations: <span className="text-teal-400 font-bold">{selectedReport.corroborationCount}</span></div>
+                </div>
+              </div>
+
+              {/* Location & Department */}
+              <div className="grid grid-cols-2 gap-4 text-xs bg-black/20 p-3.5 rounded-2xl border border-white/10 mb-4">
+                <div>
+                  <span className="text-slate-400 block text-[10px]">Department:</span>
+                  <span className="font-bold text-slate-200">{selectedReport.department?.name || 'Roads & Public Infra'}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px]">Zone:</span>
+                  <span className="font-bold text-slate-200">{selectedReport.serviceZone?.name || 'Dhaka Zone'}</span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-slate-400 block text-[10px]">Address:</span>
+                  <span className="text-slate-200">{selectedReport.address} ({selectedReport.latitude?.toFixed(4)}, {selectedReport.longitude?.toFixed(4)})</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+                <Link
+                  href="/workflow"
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 transition-colors border border-white/10"
+                >
+                  Inspect Workflow Pipeline
+                </Link>
+                <button
+                  onClick={handleCloseModal}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 text-navy-950 text-xs font-black transition-all hover:scale-105"
+                >
+                  Close Drawer
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

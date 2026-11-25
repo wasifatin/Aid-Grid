@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import PerspectiveCard from '@/components/PerspectiveCard';
+import ModalPortal from '@/components/ModalPortal';
 import {
   Truck,
   CheckCircle2,
@@ -252,6 +253,7 @@ export default function FieldOperationsPage() {
                   {asgn.status === 'IN_PROGRESS' && (
                     <button
                       onClick={() => {
+                        setIsClosing(false);
                         setResolvingAssignment(asgn);
                         setResolutionSummary('');
                       }}
@@ -276,93 +278,95 @@ export default function FieldOperationsPage() {
 
       {/* Resolution Submission Modal */}
       {resolvingAssignment && (
-        <div
-          onClick={handleCloseModal}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
-        >
+        <ModalPortal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-left border border-cyan-500/30 ${
-              isClosing ? 'modal-pop-out' : 'modal-pop-in'
-            }`}
+            onClick={handleCloseModal}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
           >
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`glass-pane-chrome glass-rim rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto relative text-left border border-cyan-500/30 ${
+                isClosing ? 'modal-pop-out' : 'modal-pop-in'
+              }`}
             >
-              ✕
-            </button>
+              <button
+                onClick={handleCloseModal}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                ✕
+              </button>
 
-            <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
-              {resolvingAssignment.report?.referenceNumber}
-            </span>
-            <h3 className="text-lg font-black text-white mt-1 mb-2">
-              {t.fieldOps.submitResolution}
-            </h3>
-            <p className="text-xs text-slate-400 mb-4">
-              Enter verifiable proof of physical municipal completion to trigger the citizen confirmation gate.
-            </p>
+              <span className="text-xs font-mono font-bold text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40">
+                {resolvingAssignment.report?.referenceNumber}
+              </span>
+              <h3 className="text-lg font-black text-white mt-1 mb-2">
+                {t.fieldOps.submitResolution}
+              </h3>
+              <p className="text-xs text-slate-400 mb-4">
+                Enter verifiable proof of physical municipal completion to trigger the citizen confirmation gate.
+              </p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
-                  Resolution Summary & Materials Used *
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder={t.fieldOps.resolutionNotesPlaceholder}
-                  value={resolutionSummary}
-                  onChange={(e) => setResolutionSummary(e.target.value)}
-                  className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
-                  {t.fieldOps.uploadAfterPhoto}
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    placeholder="Enter post-repair photo URL (or click demo button)"
-                    value={resolutionPhotoUrl}
-                    onChange={(e) => setResolutionPhotoUrl(e.target.value)}
-                    className="flex-1 px-4 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
+                    Resolution Summary & Materials Used *
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder={t.fieldOps.resolutionNotesPlaceholder}
+                    value={resolutionSummary}
+                    onChange={(e) => setResolutionSummary(e.target.value)}
+                    className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setResolutionPhotoUrl('https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=600&q=80')}
-                    className="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-2xl border border-white/10 font-bold"
-                  >
-                    Demo Proof
-                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
+                    {t.fieldOps.uploadAfterPhoto}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="Enter post-repair photo URL (or click demo button)"
+                      value={resolutionPhotoUrl}
+                      onChange={(e) => setResolutionPhotoUrl(e.target.value)}
+                      className="flex-1 px-4 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setResolutionPhotoUrl('https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=600&q=80')}
+                      className="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs rounded-2xl border border-white/10 font-bold"
+                    >
+                      Demo Proof
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
+                    Internal Crew Work Notes (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 4 man-hours, compacted hot bitumen, road dry"
+                    value={fieldNotes}
+                    onChange={(e) => setFieldNotes(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-300 mb-1">
-                  Internal Crew Work Notes (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 4 man-hours, compacted hot bitumen, road dry"
-                  value={fieldNotes}
-                  onChange={(e) => setFieldNotes(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-black/30 border border-white/10 rounded-2xl text-xs text-white placeholder-slate-500"
-                />
-              </div>
+              <button
+                onClick={handleSubmitResolution}
+                disabled={processingAction}
+                className="w-full mt-6 py-3 rounded-2xl btn-jellyfish text-xs font-black uppercase tracking-wider shadow-lg flex items-center justify-center gap-2"
+              >
+                {t.fieldOps.completeBtn}
+              </button>
             </div>
-
-            <button
-              onClick={handleSubmitResolution}
-              disabled={processingAction}
-              className="w-full mt-6 py-3 rounded-2xl btn-jellyfish text-xs font-black uppercase tracking-wider shadow-lg flex items-center justify-center gap-2"
-            >
-              {t.fieldOps.completeBtn}
-            </button>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

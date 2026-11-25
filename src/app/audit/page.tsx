@@ -81,7 +81,7 @@ export default function AuditLogsPage() {
                     {item.referenceNumber}
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px] font-bold">
+                    <span className="inline-flex items-center whitespace-nowrap px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px] font-bold">
                       {item.status}
                     </span>
                   </td>
@@ -92,7 +92,7 @@ export default function AuditLogsPage() {
                     AidGrid Engine v2.6
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shadow-sm">
+                    <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shadow-sm">
                       ✓ SHA-256 Verified
                     </span>
                   </td>
